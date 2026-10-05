@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>APEX VERSE Career OS — V1.27</title>
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#11151a; --panel2:#151a20; --line:#252b33;
+    --text:#f2f4f6; --muted:#8e98a5; --accent:#d9e4ff; --danger:#ff7b7b;
+    --shadow:0 12px 40px rgba(0,0,0,.28); --radius:16px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+  button,input,select{font:inherit}
+  .app{display:flex;min-height:100vh}
+  aside{width:240px;background:#0d1014;border-right:1px solid var(--line);padding:24px 16px;position:sticky;top:0;height:100vh}
+  .brand{font-weight:800;letter-spacing:.12em;font-size:15px;margin:2px 8px 28px}
+  .brand span{display:block;color:var(--muted);font-size:10px;letter-spacing:.18em;margin-top:6px;font-weight:600}
+  nav button{width:100%;background:none;border:0;color:var(--muted);text-align:left;padding:12px 12px;border-radius:10px;cursor:pointer}
+  nav button:hover,nav button.active{background:var(--panel2);color:var(--text)}
+  .main{flex:1;padding:28px 32px;max-width:1400px;margin:0 auto;width:100%}
+  .top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:26px}
+  h1{font-size:30px;margin:0 0 6px;letter-spacing:-.03em}
+  .sub{color:var(--muted);font-size:14px}
+  .btn{border:1px solid var(--line);background:var(--text);color:#0b0d10;border-radius:10px;padding:11px 16px;cursor:pointer;font-weight:700}
+  .btn.secondary{background:transparent;color:var(--text)}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+  .metric{font-size:28px;font-weight:800;margin-top:8px}
+  .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+  .two{display:grid;grid-template-columns:1.55fr 1fr;gap:14px;align-items:start}
+  .section-title{font-size:14px;font-weight:800;margin:0 0 14px}
+  .dashboard-panel{display:flex;flex-direction:column}
+  .two > .dashboard-panel{height:auto}
+  .two .activity{min-height:0}
+  .dashboard-panel .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .panel-hint{font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.04em}
+  .pipeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+  .pipeline-stage{appearance:none;width:100%;text-align:left;cursor:pointer;border:1px solid var(--line);color:var(--text);background:var(--panel2);border-radius:11px;padding:11px;transition:transform .16s ease,border-color .16s ease,background .16s ease}
+  .pipeline-stage:hover{transform:translateY(-1px);border-color:#46515e;background:#1a2027}
+  .pipeline-stage:focus-visible{outline:2px solid #7f8b99;outline-offset:2px}
+  .pipeline-stage .stage-top{display:flex;justify-content:space-between;align-items:center}
+  .pipeline-summary{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:-3px 0 12px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+  .pipeline-summary span{font-size:11px;color:var(--muted)}
+  .pipeline-summary b{font-size:12px}
+  .action-center{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 14px}
+  .action-tile{appearance:none;text-align:left;width:100%;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:14px;padding:13px 14px;cursor:pointer;transition:transform .18s ease,border-color .18s ease,background .18s ease;box-shadow:var(--shadow)}
+  .action-tile:hover{transform:translateY(-1px);border-color:#46515e;background:#151a20}
+  .action-tile:focus-visible{outline:2px solid #7f8b99;outline-offset:2px}
+  .action-tile .label{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .action-tile .action-value{font-size:25px;font-weight:800;line-height:1;margin-top:8px}
+  .action-tile .action-note{font-size:10px;color:var(--muted);line-height:1.4;margin-top:5px}
+  .action-tile .arrow{font-size:16px;color:var(--muted)}
+  .action-tile.alert{border-color:rgba(255,123,123,.35)}
+  .action-tile.alert .action-value{color:#ffb0b0}
+  .stage{position:relative;min-height:88px;background:var(--panel2);border:1px solid var(--line);padding:14px;border-radius:13px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+  .stage-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+  .stage b{font-size:25px;line-height:1;letter-spacing:-.04em}
+  .stage div{font-size:11px;color:var(--muted);margin-top:8px}
+  .stage-track{height:5px;border-radius:999px;background:#1a2027;border:1px solid #2a313a;overflow:hidden;margin-top:12px}
+  .stage-fill{height:100%;width:0;background:#d9e4ff;border-radius:999px;transition:width .25s ease}
+  .activity{display:flex;flex-direction:column;gap:9px;flex:1}
+  .activity-item{appearance:none;display:block;width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--text);font:inherit;text-align:left;text-decoration:none;min-height:57px}
+  .activity-item b{font-size:12px}
+  .activity-item small{color:var(--muted)}
+  .toolbar{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .toolbar .left{display:flex;gap:8px;flex-wrap:wrap}
+  input,select{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 12px;outline:none}
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);font-size:13px}
+  th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+  .pill{display:inline-flex;padding:5px 8px;border-radius:999px;background:#1a2129;border:1px solid var(--line);font-size:11px}
+  .empty{padding:36px 10px;text-align:center;color:var(--muted)}
+  .page{display:none}
+  .page.active{display:block}
+  .modal-back{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+  .modal{width:min(700px,100%);max-height:calc(100vh - 40px);overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow);margin:auto}
+  .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .formgrid .full{grid-column:1/-1}
+  label{font-size:11px;color:var(--muted);display:block;margin-bottom:6px}
+  .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;position:sticky;bottom:0;background:var(--panel);padding-top:12px}
+  .note{color:var(--muted);font-size:12px;line-height:1.5}
+  .danger{color:var(--danger)}
+  .interview-intel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:0 0 16px}
+  .interview-intel-card{appearance:none;width:100%;font:inherit;text-align:left;color:var(--text);padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);cursor:pointer;position:relative;box-shadow:0 5px 16px rgba(0,0,0,.16);transition:background .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+  .interview-intel-card::after{content:"›";position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--muted);opacity:.85}
+  .interview-intel-card:hover{background:#1a2027;border-color:#46515e;transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.22)}
+  .interview-intel-card:focus-visible{outline:2px solid #7f8b99;outline-offset:2px}
+  .interview-intel-card.active{background:#1a2028;border-color:#596574;box-shadow:inset 0 -2px 0 #aeb8c4,0 8px 20px rgba(0,0,0,.22)}
+  .interview-intel-card.active::before{content:"ACTIVE";position:absolute;top:8px;right:28px;font-size:8px;font-weight:800;letter-spacing:.1em;color:#c7d0da;opacity:.78}
+  .interview-intel-label{display:block;font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding-right:30px}
+  .interview-intel-card.active .interview-intel-label{color:var(--text)}
+  .interview-intel-card b{display:block;font-size:23px;line-height:1.1;margin-top:5px}
+  .interview-intel-card small{display:block;font-size:10px;color:var(--muted);margin-top:4px}
+  .interview-intel-card.active small{color:#b8c1cb}
+  @media(max-width:900px){.interview-intel{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:560px){.interview-intel{grid-template-columns:1fr}.interview-intel-card{padding:12px 14px}}
+  .interview-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .interview-card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .interview-card .row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .interview-card h3{margin:0 0 5px;font-size:16px}
+  .interview-card .meta{color:var(--muted);font-size:12px;line-height:1.55}
+  .interview-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .small-btn{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:9px;padding:8px 11px;cursor:pointer;font-size:12px}
+  .small-btn:hover{background:#1a2027}
+  .prep-block{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+  .prep-block .label{margin-bottom:5px}
+  textarea{width:100%;min-height:90px;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 12px;resize:vertical;outline:none}
+  .follow-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+  .follow-card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .follow-card .row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .follow-card h3{margin:0 0 5px;font-size:15px}
+  .follow-card .meta{color:var(--muted);font-size:12px;line-height:1.55}
+  .follow-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .done{opacity:.62}
+  .overdue{border-color:rgba(255,123,123,.45)}
+  .today{border-color:rgba(217,228,255,.55)}
+  .network-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+  .network-card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .network-card .row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .network-card h3{margin:0 0 5px;font-size:15px}
+  .network-card .meta{color:var(--muted);font-size:12px;line-height:1.55}
+  .network-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .contact-chip{display:inline-flex;padding:5px 8px;border-radius:999px;background:#1a2129;border:1px solid var(--line);font-size:11px}
+  .network-note{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;line-height:1.5}
+  @media(max-width:1000px){.network-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:760px){.network-grid{grid-template-columns:1fr}}
+  .offer-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+  .offer-toolbar{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+  .offer-toolbar .left{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .offer-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .offer-card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .offer-card .row{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+  .offer-card h3{margin:0 0 5px;font-size:16px}
+  .offer-card .meta{color:var(--muted);font-size:12px;line-height:1.55}
+  .offer-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+  .offer-metric{border:1px solid var(--line);background:#12171d;border-radius:10px;padding:10px}
+  .offer-metric b{display:block;font-size:16px;margin-top:4px}
+  .offer-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .score-badge{font-size:18px;font-weight:800;white-space:nowrap}
+  .compare-box{margin-top:18px}
+  .compare-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-items:end}
+  .compare-table{overflow:auto;margin-top:14px}
+  .compare-table table{min-width:720px}
+  .winner{border-color:rgba(217,228,255,.55);box-shadow:0 0 0 1px rgba(217,228,255,.08) inset}
+  @media(max-width:1000px){.offer-summary{grid-template-columns:repeat(2,1fr)}.offer-grid{grid-template-columns:1fr}.compare-grid{grid-template-columns:1fr}}
+  .offer-intel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:0 0 16px}
+  .offer-intel-card{appearance:none;width:100%;font:inherit;text-align:left;color:var(--text);padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);cursor:pointer;position:relative;box-shadow:0 5px 16px rgba(0,0,0,.16);transition:background .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+  .offer-intel-card::after{content:"›";position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--muted);opacity:.85}
+  .offer-intel-card:hover{background:#1a2027;border-color:#46515e;transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.22)}
+  .offer-intel-card:focus-visible{outline:2px solid #7f8b99;outline-offset:2px}
+  .offer-intel-card.active{background:#1a2028;border-color:#596574;box-shadow:inset 0 -2px 0 #aeb8c4,0 8px 20px rgba(0,0,0,.22)}
+  .offer-intel-card.active::before{content:"ACTIVE";position:absolute;top:8px;right:28px;font-size:8px;font-weight:800;letter-spacing:.1em;color:#c7d0da;opacity:.78}
+  .offer-intel-label{display:block;font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding-right:30px}
+  .offer-intel-card.active .offer-intel-label{color:var(--text)}
+  .offer-intel-card b{display:block;font-size:23px;line-height:1.1;margin-top:5px}
+  .offer-intel-card small{display:block;font-size:10px;color:var(--muted);margin-top:4px}
+  .offer-intel-card.active small{color:#b8c1cb}
+  @media(max-width:900px){.offer-intel{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:560px){.offer-intel{grid-template-columns:1fr}.offer-intel-card{padding:12px 14px}}
+  .analytics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+  .dashboard-lower{display:grid;grid-template-columns:1.25fr .95fr;gap:14px;margin-top:14px}
+  .dashboard-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);min-width:0}
+  .dashboard-card h3{margin:0;font-size:15px;letter-spacing:-.01em}
+  .dashboard-card-sub{color:var(--muted);font-size:11px;line-height:1.45;margin-top:4px}
+  .analytics-two{display:grid;grid-template-columns:1.35fr 1fr;gap:14px;margin-bottom:18px}
+  .insight-card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .insight-card h3{margin:0 0 6px;font-size:15px}
+  .insight-meta{color:var(--muted);font-size:12px;line-height:1.55}
+  .bar-row{display:grid;grid-template-columns:110px 1fr 42px;gap:10px;align-items:center;margin:11px 0}
+  .bar-label{font-size:12px;color:var(--muted)}
+  .bar-track{height:9px;border-radius:999px;background:#1a2027;overflow:hidden;border:1px solid var(--line)}
+  .bar-fill{height:100%;background:#d9e4ff;border-radius:999px;min-width:2px}
+  .bar-value{text-align:right;font-weight:700;font-size:12px}
+  .mini-stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;flex:1}
+  .mini-stat{background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:14px;min-height:82px;display:flex;flex-direction:column;justify-content:space-between}
+  .mini-stat .label{line-height:1.3}
+  .mini-stat b{display:block;font-size:24px;line-height:1;margin-top:8px;letter-spacing:-.03em}
+  .insight-list{display:flex;flex-direction:column;gap:10px}
+  .insight-item{padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:var(--panel2)}
+  .insight-item b{font-size:13px}
+  .insight-item div{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.45}
+  .month-grid{display:flex;flex-direction:column;gap:12px}
+  .month-row{display:grid;grid-template-columns:36px 1fr 104px;gap:10px;align-items:center}
+  .month-label{text-align:left;color:var(--muted);font-size:11px}
+  .month-bars{display:flex;flex-direction:column;gap:5px}
+  .month-track{height:8px;border-radius:999px;background:#1a2027;border:1px solid var(--line);overflow:hidden}
+  .month-fill{height:100%;background:#d9e4ff;border-radius:999px;min-width:0}
+  .month-fill.secondary{background:#66717e}
+  .month-values{display:flex;flex-direction:column;gap:3px;text-align:right;color:var(--muted);font-size:10px}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;color:var(--muted);font-size:11px}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#d9e4ff;margin-right:5px}
+  .dot.secondary{background:#66717e}
+  @media(max-width:1000px){.analytics-grid{grid-template-columns:repeat(2,1fr)}.analytics-two{grid-template-columns:1fr}.month-row{grid-template-columns:34px 1fr 90px}}
+  @media(max-width:760px){.analytics-grid{grid-template-columns:1fr}}
+  @media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
+  @media(max-width:900px){.interview-grid{grid-template-columns:1fr}}
+  .backup-health{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;margin-top:14px;padding:14px 15px;border:1px solid var(--line);border-radius:13px;background:var(--panel2)}
+  .backup-health-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+  .backup-health-title{font-size:14px;font-weight:800;margin-top:4px}
+  .backup-health-note{font-size:11px;color:var(--muted);line-height:1.45;margin-top:4px;max-width:680px}
+  .backup-health-meta{display:grid;grid-template-columns:auto auto;gap:4px 12px;text-align:right;font-size:10px;color:var(--muted);align-items:center}
+  .backup-health-meta b{font-size:12px;color:var(--text)}
+  .backup-health.current{border-color:#596574;box-shadow:inset 3px 0 0 #aeb8c4}
+  .backup-health.stale{border-color:#4a4340;box-shadow:inset 3px 0 0 #8c7d73}
+  @media(max-width:650px){.backup-health{grid-template-columns:1fr}.backup-health-meta{text-align:left}}
+  .toast{position:fixed;top:24px;left:50%;z-index:2000;min-width:min(280px,calc(100vw - 40px));max-width:min(460px,calc(100vw - 40px));padding:13px 18px;background:rgba(17,21,26,.96);border:1px solid #3a424d;color:var(--text);border-radius:14px;box-shadow:0 16px 45px rgba(0,0,0,.42),0 0 0 1px rgba(255,255,255,.025) inset;font-size:13px;font-weight:600;line-height:1.45;text-align:center;opacity:0;transform:translate(-50%,-12px) scale(.98);pointer-events:none;transition:opacity .22s ease,transform .22s ease;backdrop-filter:blur(12px)}
+  .toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+  .text-link{border:0;background:transparent;color:var(--text);text-decoration:underline;text-underline-offset:3px;padding:0 2px;cursor:pointer;font:inherit;font-weight:700}
+  .dashboard-health{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+  .dashboard-card-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:14px}
+  .dashboard-card-head h3{margin:0 0 4px;font-size:15px}
+  .health-score{font-size:24px;font-weight:800;letter-spacing:-.03em}
+  .health-track{height:9px;background:#1a2027;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+  .health-fill{height:100%;width:0;background:#d9e4ff;border-radius:999px;transition:width .25s ease}
+  .health-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+  .health-grid>button{appearance:none;width:100%;text-align:left;padding:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:10px;cursor:pointer;transition:transform .16s ease,border-color .16s ease,background .16s ease}
+  .health-grid>button:hover{transform:translateY(-1px);border-color:#46515e;background:#1a2027}
+  .health-grid>button:focus-visible{outline:2px solid #7f8b99;outline-offset:2px}
+  .health-grid span{display:block;color:var(--muted);font-size:10px;line-height:1.35}
+  .health-grid b{display:block;font-size:18px;margin-top:4px}
+  .next-actions{display:flex;flex-direction:column;gap:8px}
+  .next-action-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 12px;border:1px solid var(--line);background:var(--panel2);border-radius:11px}
+  .next-action-item .copy{min-width:0}
+  .next-action-item b{display:block;font-size:12px}
+  .next-action-item span{display:block;color:var(--muted);font-size:11px;line-height:1.4;margin-top:3px}
+  .next-action-item .small-btn{white-space:nowrap}
+  .dashboard-click-item{appearance:none;width:100%;text-align:left;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:11px;padding:11px 12px;cursor:pointer;transition:transform .16s ease,border-color .16s ease,background .16s ease}
+  .dashboard-click-item:hover{transform:translateY(-1px);border-color:#46515e;background:#1a2027}
+  .dashboard-click-item:focus-visible{outline:2px solid #7f8b99;outline-offset:2px}
+  .dashboard-click-item b{font-size:13px}
+  .dashboard-click-item div{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.45}
+  .activity-item.clickable{cursor:pointer;transition:transform .16s ease,border-color .16s ease,background .16s ease}
+  .activity-item.clickable:hover{transform:translateY(-1px);border-color:#46515e;background:#1a2027}
+  .activity-item.clickable:focus-visible{outline:2px solid #7f8b99;outline-offset:2px}
+  .attention-list{display:flex;flex-direction:column;gap:8px}
+  .dashboard-health .insight-card,.dashboard-lower .dashboard-card{min-height:100%}
+  @media(max-width:1000px){.dashboard-health{grid-template-columns:1fr}.dashboard-lower{grid-template-columns:1fr}.health-grid{grid-template-columns:repeat(2,1fr)}.pipeline{grid-template-columns:repeat(3,1fr)}.action-center{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:760px){.health-grid{grid-template-columns:1fr 1fr}.next-action-item{align-items:flex-start;flex-direction:column}.next-action-item .small-btn{width:100%}.pipeline{grid-template-columns:repeat(2,1fr)}.dashboard-lower{grid-template-columns:1fr}.action-center{grid-template-columns:1fr 1fr}}
+  @media(max-width:480px){.action-center{grid-template-columns:1fr}.pipeline{grid-template-columns:1fr 1fr}.stage{min-height:82px;padding:11px}.stage b{font-size:22px}}
+  .link-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+  .link-badge{display:inline-flex;padding:4px 7px;border-radius:999px;background:#171d24;border:1px solid var(--line);font-size:10px;color:var(--muted)}
+  .settings-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+  .settings-action{display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;min-height:78px;padding:13px 14px;background:var(--panel2);color:var(--text);border-color:var(--line);box-shadow:none;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+  .settings-action span{font-size:12px;font-weight:800}
+  .settings-action small{font-size:10px;color:#66717e;font-weight:600;line-height:1.35}
+  .settings-action:hover{transform:translateY(-1px);background:#1a2027;border-color:#3a424d}
+  .settings-action:focus-visible{outline:2px solid #7f8b99;outline-offset:2px}
+  .settings-action.primary-action{background:#171d24;border-color:#3b4652}
+  .settings-action.danger-action{background:#171417}
+  .settings-action .action-mark{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border:1px solid #313943;border-radius:7px;color:#cbd4df;font-size:12px;font-weight:800}
+  .settings-action .action-row{display:flex;align-items:center;gap:8px}
+  .settings-meta{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:#0f1318}
+  .settings-meta span{font-size:11px;color:var(--muted)}
+  .settings-meta b{font-size:11px;color:var(--text)}
+  .danger-action{border-color:rgba(255,123,123,.35)}
+  @media(max-width:1000px){.settings-actions{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:600px){.settings-actions{grid-template-columns:1fr}}
+  .settings-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin-top:14px}
+  .check-list{display:flex;flex-direction:column;gap:10px}
+  .check-item{display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:var(--panel2)}
+  .check-item b{font-size:12px}.check-item div{font-size:11px;color:var(--muted);line-height:1.45;margin-top:2px}
+  @media(max-width:1000px){.settings-grid{grid-template-columns:1fr}}
+  @media(max-width:760px){aside{display:block;width:100%;height:auto;position:sticky;top:0;z-index:100;border-right:0;border-bottom:1px solid var(--line);padding:12px;background:#0d1014}.brand{margin:2px 4px 10px}.brand span{display:inline;margin-left:6px}.app{display:block}.main{padding:18px 14px}.pipeline{grid-template-columns:repeat(2,1fr)}.formgrid{grid-template-columns:1fr}.top{gap:12px}.top .btn{flex-shrink:0}.toolbar{align-items:stretch;flex-direction:column}.toolbar .left{width:100%}nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}nav button{width:auto;white-space:nowrap;padding:9px 11px}.grid{grid-template-columns:1fr}.analytics-grid{grid-template-columns:1fr}.follow-grid{grid-template-columns:1fr 1fr}.offer-summary{grid-template-columns:1fr 1fr}}
+
+  .toolbar .left select{min-width:140px}
+  .app-intel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:0 0 16px}
+  .app-intel-card{appearance:none;width:100%;font:inherit;text-align:left;color:var(--text);padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);cursor:pointer;position:relative;box-shadow:0 5px 16px rgba(0,0,0,.16);transition:background .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+  .app-intel-card::after{content:"›";position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--muted);opacity:.85}
+  .app-intel-card:hover{background:#1a2027;border-color:#46515e;transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.22)}
+  .app-intel-card:focus-visible{outline:2px solid #7f8b99;outline-offset:2px}
+  .app-intel-card.active{background:#1a2028;border-color:#596574;box-shadow:inset 0 -2px 0 #aeb8c4,0 8px 20px rgba(0,0,0,.22)}
+  .app-intel-card.active::before{content:"ACTIVE";position:absolute;top:8px;right:28px;font-size:8px;font-weight:800;letter-spacing:.1em;color:#c7d0da;opacity:.78}
+  .app-intel-label{display:block;font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding-right:30px}
+  .app-intel-card.active .app-intel-label{color:var(--text)}
+  .app-intel-card b{display:block;font-size:23px;line-height:1.1;margin-top:5px}
+  .app-intel-card small{display:block;font-size:10px;color:var(--muted);margin-top:4px}
+  .app-intel-card.active small{color:#b8c1cb}
+  .application-result-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:28px;margin:-2px 0 8px;padding:0 2px;color:var(--muted);font-size:11px}
+  .application-result-meta b{color:var(--text);font-size:12px}
+  .application-result-meta .filter-state{display:inline-flex;padding:4px 7px;border:1px solid var(--line);border-radius:999px;background:#171d24}
+  .app-followup{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+  .app-followup.overdue{color:#ff9e9e}
+  .app-followup.today{color:#cbd8ea}
+  .app-followup.upcoming{color:#aeb8c4}
+  .apps-table-wrap{overflow:auto}
+  .apps-table-wrap table{min-width:860px}
+  @media(max-width:900px){.app-intel{grid-template-columns:repeat(2,minmax(0,1fr))}.app-intel-card:nth-child(2){border-right:0}.app-intel-card:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+  @media(max-width:760px){.toolbar .left input,.toolbar .left select{width:100%}.toolbar .left{display:grid;grid-template-columns:1fr}.apps-table-wrap table{min-width:780px}}
+  @media(max-width:560px){.app-intel{grid-template-columns:1fr}.app-intel-card{border-right:0!important;border-bottom:1px solid var(--line)}.app-intel-card:last-child{border-bottom:0}}
+
+/* V1.11 Follow-up Intelligence */
+.followup-intel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:0 0 16px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel2);box-shadow:var(--shadow)}
+.followup-intel .intel-card{appearance:none;width:100%;font:inherit;text-align:left;color:var(--text);padding:14px 15px;border:0;border-right:1px solid var(--line);background:transparent;border-radius:0;cursor:pointer;position:relative;transition:border-color .18s ease,transform .18s ease,background .18s ease,box-shadow .18s ease}
+.followup-intel .intel-card:last-child{border-right:0}
+.followup-intel .intel-card:hover{background:#171d24}
+.followup-intel .intel-card::after{content:"›";position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--muted);opacity:.8}
+.followup-intel .intel-card:focus-visible{outline:2px solid #7f8b99;outline-offset:-2px}
+.followup-intel .intel-card.active{background:#1a2028;box-shadow:inset 0 -2px 0 #aeb8c4}.followup-intel .intel-card.active::before{content:"ACTIVE";position:absolute;top:8px;right:28px;font-size:8px;font-weight:800;letter-spacing:.1em;color:#c7d0da;opacity:.78}
+.followup-intel .intel-label{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.followup-intel .intel-card.active .intel-label{color:var(--text)}
+.followup-intel .intel-value{font-size:24px;font-weight:800;margin-top:5px;line-height:1.1;color:var(--text)}
+.followup-intel .intel-note{font-size:11px;color:var(--muted);margin-top:5px}
+.followup-intel .intel-card.active .intel-note{color:#b8c1cb}
+@media(max-width:800px){.followup-intel{grid-template-columns:repeat(2,minmax(0,1fr))}.followup-intel .intel-card:nth-child(2){border-right:0}.followup-intel .intel-card:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+@media(max-width:480px){.followup-intel{grid-template-columns:1fr}.followup-intel .intel-card{border-right:0!important;border-bottom:1px solid var(--line)}.followup-intel .intel-card:last-child{border-bottom:0}.followup-intel .intel-value{font-size:21px}}
+
+  .network-intel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0 14px}.network-intel .quick-card{appearance:none;width:100%;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--text);text-align:left;padding:13px 15px;cursor:pointer;position:relative;box-shadow:0 5px 16px rgba(0,0,0,.16);transition:background .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease;min-width:0}.network-intel .quick-card:last-child{border-right:1px solid var(--line)}.network-intel .quick-card:focus-visible{outline:2px solid #7f8b99;outline-offset:2px}.network-intel .quick-card:hover{background:#1a2027;border-color:#46515e;transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.22)}.network-intel .quick-card.active{background:#1a2028;border-color:#596574;box-shadow:inset 0 -2px 0 #aeb8c4,0 8px 20px rgba(0,0,0,.22)}.network-intel .quick-card.active::before{content:"ACTIVE";position:absolute;top:8px;right:28px;font-size:8px;font-weight:800;letter-spacing:.1em;color:#c7d0da;opacity:.78}.network-intel .quick-card::after{content:"›";position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--muted);opacity:.85}.network-intel .quick-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding-right:30px}.network-intel .quick-value{font-size:23px;font-weight:800;margin-top:4px;line-height:1.1}.network-intel .quick-sub{font-size:10px;color:var(--muted);margin-top:4px;padding-right:30px}.network-intel .quick-card.active .quick-label,.network-intel .quick-card.active .quick-sub{color:var(--text)}@media(max-width:900px){.network-intel{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.network-intel{grid-template-columns:1fr}.network-intel .quick-card{border-right:1px solid var(--line)!important}}
+
+  /* V1.27 Final Responsive + Accessibility Polish */
+  html{scroll-behavior:smooth}
+  body{overflow-x:hidden}
+  button,input,select,textarea{min-height:42px}
+  button{touch-action:manipulation}
+  input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #7f8b99;outline-offset:2px;border-color:#596574}
+  .btn,.small-btn{min-height:42px}
+  .top{flex-wrap:wrap}
+  .top > div:first-child{min-width:0}
+  .sub,.note,.meta,.activity-item,td,th{overflow-wrap:anywhere}
+  .apps-table-wrap,.table-wrap{border-radius:12px}
+  .modal-back{overscroll-behavior:contain}
+  nav button{min-height:42px}
+  @media(max-width:760px){
+    .top{align-items:stretch}
+    .top .btn{width:100%}
+    .main{max-width:none}
+    .card{padding:15px}
+    .two{grid-template-columns:1fr}
+    .interview-grid{grid-template-columns:1fr}
+    .follow-grid{grid-template-columns:1fr}
+    .network-grid{grid-template-columns:1fr}
+    .offer-summary{grid-template-columns:1fr}
+    .analytics-grid{grid-template-columns:1fr}
+    .settings-actions{grid-template-columns:1fr}
+    .settings-grid{grid-template-columns:1fr}
+    .actions{flex-direction:column}
+    .actions .btn,.actions .small-btn{width:100%}
+    .modal{padding:16px;border-radius:15px}
+    .modal-back{padding:10px}
+    .toast{top:12px;max-width:calc(100vw - 24px)}
+  }
+  @media(max-width:480px){
+    h1{font-size:25px}
+    .main{padding:14px 10px}
+    .brand{font-size:13px}
+    .brand span{font-size:9px}
+    nav{margin-inline:-4px;padding-inline:4px}
+    nav button{font-size:12px;padding:9px 10px}
+    .pipeline{grid-template-columns:1fr 1fr}
+    .action-center{grid-template-columns:1fr}
+    .health-grid{grid-template-columns:1fr}
+    .formgrid{gap:10px}
+    th,td{padding:10px;font-size:12px}
+  }
+  @media(max-width:340px){
+    .pipeline{grid-template-columns:1fr}
+    .brand span{display:none}
+    .main{padding-inline:8px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand">APEX VERSE <span>CAREER OS · V1.27</span></div>
+    <nav>
+      <button class="nav active" data-page="dashboard">Dashboard</button>
+      <button class="nav" data-page="applications">Applications</button>
+      <button class="nav" data-page="interviews">Interviews</button>
+      <button class="nav" data-page="followups">Follow-ups</button>
+      <button class="nav" data-page="networking">Networking</button>
+      <button class="nav" data-page="offers">Offers</button>
+      <button class="nav" data-page="analytics">Analytics</button>
+      <button class="nav" data-page="settings">Settings & Backup</button>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <section id="dashboard" class="page active">
+      <div class="top">
+        <div>
+          <h1>Your Career Command Center</h1>
+          <div class="sub">A local-first prototype for organizing a modern job search.</div>
+        </div>
+        <button class="btn" onclick="openModal()">+ Add Application</button>
+      </div>
+
+      <div class="grid">
+        <div class="card"><div class="label">Applications</div><div class="metric" id="mApps">0</div></div>
+        <div class="card"><div class="label">Interviews</div><div class="metric" id="mInterviews">0</div></div>
+        <div class="card"><div class="label">Offers</div><div class="metric" id="mOffers">0</div></div>
+        <div class="card"><div class="label">Follow-ups Due</div><div class="metric" id="mFollowups">0</div></div>
+      </div>
+
+      <div class="action-center" aria-label="Career Action Center">
+        <button class="action-tile" id="dActionFollowups" onclick="goToPage('followups')"><div class="label"><span>Follow-ups</span><span class="arrow">›</span></div><div class="action-value" id="dActionFollowupCount">0</div><div class="action-note">Open or overdue actions</div></button>
+        <button class="action-tile" id="dActionInterviews" onclick="goToPage('interviews')"><div class="label"><span>Next Interview</span><span class="arrow">›</span></div><div class="action-value" id="dActionInterviewCount">0</div><div class="action-note" id="dActionInterviewNote">No upcoming interviews</div></button>
+        <button class="action-tile" id="dActionNetwork" onclick="goToPage('networking')"><div class="label"><span>Network Due</span><span class="arrow">›</span></div><div class="action-value" id="dActionNetworkCount">0</div><div class="action-note">Contacts ready to reconnect</div></button>
+        <button class="action-tile" id="dActionGapsTile" onclick="goToPage('applications')"><div class="label"><span>Action Gaps</span><span class="arrow">›</span></div><div class="action-value" id="dActionGapCount">0</div><div class="action-note">Active applications without a next step</div></button>
+      </div>
+
+      <div class="two">
+        <div class="card dashboard-panel">
+          <div class="section-title"><span>Application Pipeline</span><span class="panel-hint">CURRENT SEARCH</span></div>
+          <div class="pipeline-summary"><span>Live opportunities across your current search</span><b id="dPipelineActive">0 active</b></div>
+          <div class="pipeline" id="pipeline"></div>
+        </div>
+        <div class="card dashboard-panel">
+          <div class="section-title"><span>Recent Activity</span><span class="panel-hint">LATEST</span></div>
+          <div class="activity" id="activity"></div>
+        </div>
+      </div>
+
+      <div class="dashboard-lower">
+        <div class="dashboard-card dashboard-panel">
+          <div class="dashboard-card-head"><div><h3>Career Search Snapshot</h3><div class="dashboard-card-sub">The four signals that show how your search is progressing.</div></div></div>
+          <div class="mini-stat-grid">
+            <div class="mini-stat"><div class="label">Response Rate</div><b id="dResponse">0%</b></div>
+            <div class="mini-stat"><div class="label">Interview Rate</div><b id="dInterviewRate">0%</b></div>
+            <div class="mini-stat"><div class="label">Networking</div><b id="dNetworking">0</b></div>
+            <div class="mini-stat"><div class="label">Referral Opportunities</div><b id="dReferrals">0</b></div>
+          </div>
+        </div>
+        <div class="dashboard-card dashboard-panel">
+          <div class="dashboard-card-head"><div><h3>Needs Attention</h3><div class="dashboard-card-sub">Priority items that may affect your next move.</div></div></div>
+          <div class="insight-list" id="dAttention"></div>
+        </div>
+      </div>
+
+      <div class="dashboard-health" style="margin-top:14px">
+        <div class="insight-card">
+          <div class="dashboard-card-head"><div><h3>Search Health</h3><div class="insight-meta">A quick read of how active and actionable your search is.</div></div><span class="health-score" id="dHealthScore">0%</span></div>
+          <div class="health-track"><div class="health-fill" id="dHealthFill"></div></div>
+          <div class="health-grid">
+            <button type="button" onclick="openApplicationQuickView('active')"><span>Active applications</span><b id="dActiveApps">0</b></button>
+            <button type="button" onclick="goToPage('interviews')"><span>Upcoming interviews</span><b id="dUpcomingInterviews">0</b></button>
+            <button type="button" onclick="goToPage('followups')"><span>Open actions</span><b id="dOpenActions">0</b></button>
+            <button type="button" onclick="openApplicationQuickView('action')"><span>Missing next actions</span><b id="dActionGaps">0</b></button>
+          </div>
+        </div>
+        <div class="insight-card">
+          <div class="dashboard-card-head"><div><h3>Next Best Actions</h3><div class="insight-meta">The highest-value actions detected from your current records.</div></div></div>
+          <div class="next-actions" id="dNextActions"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="applications" class="page">
+      <div class="top">
+        <div><h1>Applications</h1><div class="sub">Track roles, stages and next actions.</div></div>
+        <button class="btn" onclick="openModal()">+ Add Application</button>
+      </div>
+      <div class="app-intel" id="appIntel" role="tablist" aria-label="Application quick views">
+        <button type="button" class="app-intel-card" data-app-view="active" role="tab" aria-selected="false" onclick="setApplicationQuick('active')"><span class="app-intel-label">Active Search</span><b id="appIntelActive">0</b><small>Live opportunities</small></button>
+        <button type="button" class="app-intel-card" data-app-view="action" role="tab" aria-selected="false" onclick="setApplicationQuick('action')"><span class="app-intel-label">Needs Action</span><b id="appIntelAction">0</b><small>Missing a next step</small></button>
+        <button type="button" class="app-intel-card" data-app-view="interview" role="tab" aria-selected="false" onclick="setApplicationQuick('interview')"><span class="app-intel-label">Interview Linked</span><b id="appIntelInterview">0</b><small>Applications with interviews</small></button>
+        <button type="button" class="app-intel-card" data-app-view="offer" role="tab" aria-selected="false" onclick="setApplicationQuick('offer')"><span class="app-intel-label">Offer Linked</span><b id="appIntelOffer">0</b><small>Applications with offers</small></button>
+      </div>
+      <div class="card">
+        <div class="toolbar">
+          <div class="left">
+            <input id="search" placeholder="Search company or role" oninput="renderApplications()" />
+            <select id="statusFilter" onchange="renderApplications()">
+              <option value="">All statuses</option>
+              <option>Saved</option><option>Applied</option><option>Screening</option>
+              <option>Interview</option><option>Final</option><option>Offer</option>
+              <option>Rejected</option><option>Withdrawn</option>
+            </select>
+            <select id="appQuickFilter" onchange="renderApplications()">
+              <option value="">Quick view</option>
+              <option value="active">Active search</option>
+              <option value="action">Needs action</option>
+              <option value="interview">Has interview</option>
+              <option value="offer">Has offer</option>
+            </select>
+            <button type="button" class="small-btn" onclick="clearApplicationFilters()">Clear filters</button>
+          </div>
+          <button class="btn secondary" onclick="seedDemo()">Load Demo Data</button>
+        </div>
+        <div class="application-result-meta" id="applicationResultMeta"></div>
+        <div id="appsTable"></div>
+      </div>
+    </section>
+
+    <section id="interviews" class="page">
+      <div class="top">
+        <div><h1>Interviews</h1><div class="sub">Prepare before the interview. Learn after it. Keep every stage organized.</div></div>
+        <button class="btn" onclick="openInterviewModal()">+ Add Interview</button>
+      </div>
+      <div class="grid">
+        <div class="card"><div class="label">Scheduled</div><div class="metric" id="iScheduled">0</div></div>
+        <div class="card"><div class="label">Completed</div><div class="metric" id="iCompleted">0</div></div>
+        <div class="card"><div class="label">High Priority</div><div class="metric" id="iHigh">0</div></div>
+        <div class="card"><div class="label">Thank-you Pending</div><div class="metric" id="iThanks">0</div></div>
+      </div>
+      <div class="interview-intel" id="interviewIntel" role="tablist" aria-label="Interview quick views">
+        <button type="button" class="interview-intel-card" data-interview-view="upcoming" role="tab" aria-selected="false" onclick="setInterviewQuick('upcoming')"><span class="interview-intel-label">Upcoming</span><b id="interviewIntelUpcoming">0</b><small>Scheduled interviews</small></button>
+        <button type="button" class="interview-intel-card" data-interview-view="today" role="tab" aria-selected="false" onclick="setInterviewQuick('today')"><span class="interview-intel-label">Today</span><b id="interviewIntelToday">0</b><small>Interviews on deck</small></button>
+        <button type="button" class="interview-intel-card" data-interview-view="thanks" role="tab" aria-selected="false" onclick="setInterviewQuick('thanks')"><span class="interview-intel-label">Thank-you Pending</span><b id="interviewIntelThanks">0</b><small>Completed, follow-up due</small></button>
+        <button type="button" class="interview-intel-card" data-interview-view="high" role="tab" aria-selected="false" onclick="setInterviewQuick('high')"><span class="interview-intel-label">High Priority</span><b id="interviewIntelHigh">0</b><small>Priority interviews</small></button>
+      </div>
+      <div class="card">
+        <div class="toolbar">
+          <div class="left">
+            <select id="interviewFilter" onchange="renderInterviews()">
+              <option value="">All interviews</option>
+              <option>Scheduled</option><option>Completed</option><option>Cancelled</option>
+            </select>
+            <select id="interviewQuickFilter" onchange="renderInterviews()">
+              <option value="">Quick view</option>
+              <option value="upcoming">Upcoming</option>
+              <option value="today">Today</option>
+              <option value="thanks">Thank-you pending</option>
+              <option value="high">High priority</option>
+            </select>
+          </div>
+          <div class="note">Interview data is stored locally in this prototype.</div>
+        </div>
+        <div id="interviewList"></div>
+      </div>
+    </section>
+
+    <section id="followups" class="page">
+      <div class="top">
+        <div><h1>Follow-ups</h1><div class="sub">Never lose the next action in your career search.</div></div>
+        <button class="btn" onclick="openFollowupModal()">+ Add Follow-up</button>
+      </div>
+      <div class="followup-intel" id="followupIntel" role="tablist" aria-label="Follow-up quick views">
+        <button type="button" class="intel-card" data-followup-view="Overdue" role="tab" aria-selected="false" onclick="setFollowupQuick('Overdue')"><div class="intel-label">Overdue</div><div class="intel-value" id="fuIntelOverdue">0</div><div class="intel-note">Needs attention now</div></button>
+        <button type="button" class="intel-card" data-followup-view="Due" role="tab" aria-selected="false" onclick="setFollowupQuick('Due')"><div class="intel-label">Due Today</div><div class="intel-value" id="fuIntelToday">0</div><div class="intel-note">Action before day ends</div></button>
+        <button type="button" class="intel-card" data-followup-view="Upcoming" role="tab" aria-selected="false" onclick="setFollowupQuick('Upcoming')"><div class="intel-label">Upcoming</div><div class="intel-value" id="fuIntelUpcoming">0</div><div class="intel-note">Next 7 days</div></button>
+        <button type="button" class="intel-card" data-followup-view="High Priority" role="tab" aria-selected="false" onclick="setFollowupQuick('High Priority')"><div class="intel-label">High Priority</div><div class="intel-value" id="fuIntelPriority">0</div><div class="intel-note">Open priority actions</div></button>
+      </div>
+      <div class="follow-grid">
+        <div class="card"><div class="label">Due Today</div><div class="metric" id="fToday">0</div></div>
+        <div class="card"><div class="label">Overdue</div><div class="metric" id="fOverdue">0</div></div>
+        <div class="card"><div class="label">Upcoming</div><div class="metric" id="fUpcoming">0</div></div>
+        <div class="card"><div class="label">Completed</div><div class="metric" id="fCompleted">0</div></div>
+      </div>
+      <div class="card">
+        <div class="toolbar">
+          <div class="left">
+            <select id="followFilter" onchange="renderFollowups()">
+              <option value="">All follow-ups</option>
+              <option value="Overdue">Overdue</option><option value="Due">Due</option><option value="Upcoming">Upcoming</option><option value="Completed">Completed</option><option value="High Priority">High Priority</option>
+            </select>
+          </div>
+          <div class="note">Follow-up data is stored locally in this prototype.</div>
+        </div>
+        <div id="followupList"></div>
+      </div>
+
+    </section>
+
+    <section id="networking" class="page">
+      <div class="top">
+        <div><h1>Networking</h1><div class="sub">Build relationships, remember context, and never lose the next connection.</div></div>
+        <button class="btn" onclick="openNetworkModal()">+ Add Contact</button>
+      </div>
+
+      <div class="network-grid">
+        <div class="card"><div class="label">Contacts</div><div class="metric" id="nContacts">0</div></div>
+        <div class="card"><div class="label">Active Connections</div><div class="metric" id="nActive">0</div></div>
+        <div class="card"><div class="label">Referral Opportunities</div><div class="metric" id="nReferrals">0</div></div>
+        <div class="card"><div class="label">Follow-ups Due</div><div class="metric" id="nDue">0</div></div>
+      </div>
+
+      <div class="card">
+        <div class="toolbar">
+          <div class="left">
+            <input id="networkSearch" placeholder="Search name, company or role" oninput="renderNetworking()" />
+            <select id="networkFilter" onchange="renderNetworking()">
+              <option value="">All contacts</option>
+              <option>New</option><option>Connected</option><option>Conversation</option><option>Referral</option><option>Follow-up</option>
+            </select>
+          </div>
+          <div class="note">Networking data is stored locally in this prototype.</div>
+        </div>
+        <div class="network-intel" id="networkIntel" role="tablist" aria-label="Networking quick views">
+  <button type="button" class="quick-card" data-net-view="all" role="tab" aria-selected="false" aria-label="Show all contacts"><div class="quick-label">All contacts</div><div class="quick-value" id="niAll">0</div><div class="quick-sub">View your full network</div></button>
+  <button type="button" class="quick-card" data-net-view="referrals" role="tab" aria-selected="false" aria-label="Show referral opportunities"><div class="quick-label">Referral opportunities</div><div class="quick-value" id="niReferrals">0</div><div class="quick-sub">People who can help</div></button>
+  <button type="button" class="quick-card" data-net-view="stale" role="tab" aria-selected="false" aria-label="Show contacts needing reconnection"><div class="quick-label">Needs reconnection</div><div class="quick-value" id="niStale">0</div><div class="quick-sub">30+ days since contact</div></button>
+  <button type="button" class="quick-card" data-net-view="due" role="tab" aria-selected="false" aria-label="Show contacts due for contact"><div class="quick-label">Contact due</div><div class="quick-value" id="niDue">0</div><div class="quick-sub">Today or overdue</div></button>
+</div>
+<div id="networkList"></div>
+      </div>
+    </section>
+
+    <section id="offers" class="page">
+      <div class="top">
+        <div><h1>Offers</h1><div class="sub">Compare compensation, career value and fit before making a decision.</div></div>
+        <button class="btn" onclick="openOfferModal()">+ Add Offer</button>
+      </div>
+      <div class="offer-intel" id="offerIntel" role="tablist" aria-label="Offer quick views">
+        <button type="button" class="offer-intel-card" data-offer-view="evaluating" role="tab" aria-selected="false" onclick="setOfferQuick('evaluating')"><span class="offer-intel-label">Evaluating</span><b id="offerIntelEvaluating">0</b><small>Offers still in play</small></button>
+        <button type="button" class="offer-intel-card" data-offer-view="due" role="tab" aria-selected="false" onclick="setOfferQuick('due')"><span class="offer-intel-label">Decision Due</span><b id="offerIntelDue">0</b><small>Deadline today or overdue</small></button>
+        <button type="button" class="offer-intel-card" data-offer-view="accepted" role="tab" aria-selected="false" onclick="setOfferQuick('accepted')"><span class="offer-intel-label">Accepted</span><b id="offerIntelAccepted">0</b><small>Accepted opportunities</small></button>
+        <button type="button" class="offer-intel-card" data-offer-view="action" role="tab" aria-selected="false" onclick="setOfferQuick('action')"><span class="offer-intel-label">Action Needed</span><b id="offerIntelAction">0</b><small>Missing a next step</small></button>
+      </div>
+      <div class="offer-summary">
+        <div class="card"><div class="label">Offers</div><div class="metric" id="oCount">0</div></div>
+        <div class="card"><div class="label">Evaluating</div><div class="metric" id="oEvaluating">0</div></div>
+        <div class="card"><div class="label">Accepted</div><div class="metric" id="oAccepted">0</div></div>
+        <div class="card"><div class="label">Top Score</div><div class="metric" id="oTopScore">—</div></div>
+      </div>
+      <div class="card">
+        <div class="offer-toolbar">
+          <div class="left">
+            <input id="offerSearch" placeholder="Search company or role" oninput="renderOffers()" />
+            <select id="offerFilter" onchange="renderOffers()"><option value="">All offers</option><option>Evaluating</option><option>Accepted</option><option>Declined</option><option>Expired</option></select>
+            <select id="offerQuickFilter" onchange="renderOffers()"><option value="">Quick view</option><option value="evaluating">Evaluating</option><option value="due">Decision due</option><option value="accepted">Accepted</option><option value="action">Action needed</option></select>
+            <button type="button" class="small-btn" onclick="clearOfferFilters()">Clear filters</button>
+          </div>
+          <button class="btn secondary" onclick="seedOfferData()">Load Demo Offers</button>
+        </div>
+        <div id="offerList"></div>
+      </div>
+      <div class="card compare-box">
+        <div class="section-title">Compare Offers</div>
+        <div class="note">Choose up to three offers for a side-by-side decision view. The same factor weights are applied to every offer.</div>
+        <div class="compare-grid" style="margin-top:14px">
+          <div><label>Offer A</label><select id="compareA" onchange="renderOfferComparison()"></select></div>
+          <div><label>Offer B</label><select id="compareB" onchange="renderOfferComparison()"></select></div>
+          <div><label>Offer C</label><select id="compareC" onchange="renderOfferComparison()"></select></div>
+        </div>
+        <div id="offerComparison" class="compare-table"></div>
+      </div>
+    </section>
+
+    <section id="analytics" class="page">
+      <div class="top">
+        <div><h1>Analytics</h1><div class="sub">See your search as a system: where activity is building momentum, where it stalls, and what needs attention.</div></div>
+      </div>
+
+      <div class="analytics-grid">
+        <div class="card"><div class="label">Applications</div><div class="metric" id="aApps">0</div></div>
+        <div class="card"><div class="label">Response Rate</div><div class="metric" id="aResponse">0%</div></div>
+        <div class="card"><div class="label">Interview Rate</div><div class="metric" id="aInterview">0%</div></div>
+        <div class="card"><div class="label">Offer Rate</div><div class="metric" id="aOffer">0%</div></div>
+        <div class="card"><div class="label">Active Search</div><div class="metric" id="aActive">0</div></div>
+        <div class="card"><div class="label">Recorded Interviews</div><div class="metric" id="aInterviews">0</div></div>
+        <div class="card"><div class="label">Recorded Offers</div><div class="metric" id="aRecordedOffers">0</div></div>
+        <div class="card"><div class="label">Networking Contacts</div><div class="metric" id="aNetworking">0</div></div>
+        <div class="card"><div class="label">Overdue Follow-ups</div><div class="metric" id="aOverdue">0</div></div>
+      </div>
+
+      <div class="analytics-two">
+        <div class="card">
+          <div class="section-title">Application Funnel</div>
+          <div id="aFunnel"></div>
+          <div class="legend"><span><span class="dot"></span>Funnel rates are based on application statuses</span></div>
+          <div class="note" style="margin-top:8px">Recorded interviews and offers are tracked separately until they are explicitly linked to applications.</div>
+        </div>
+        <div class="card">
+          <div class="section-title">Job Search Activity — Last 6 Months</div>
+          <div id="aMonths" class="month-grid"></div>
+          <div class="legend">
+            <span><span class="dot"></span>Applications</span>
+            <span><span class="dot secondary"></span>Interviews</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="analytics-two">
+        <div class="card">
+          <div class="section-title">Follow-up Health</div>
+          <div class="mini-stat-grid">
+            <div class="mini-stat"><div class="label">Due Today</div><b id="aDueToday">0</b></div>
+            <div class="mini-stat"><div class="label">Upcoming</div><b id="aUpcoming">0</b></div>
+            <div class="mini-stat"><div class="label">Completed</div><b id="aCompletedFU">0</b></div>
+            <div class="mini-stat"><div class="label">High Priority Open</div><b id="aHighFU">0</b></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title">Networking & Offers</div>
+          <div class="mini-stat-grid">
+            <div class="mini-stat"><div class="label">Referral Opportunities</div><b id="aReferrals">0</b></div>
+            <div class="mini-stat"><div class="label">Offers</div><b id="aOffers">0</b></div>
+            <div class="mini-stat"><div class="label">Evaluating</div><b id="aEvaluating">0</b></div>
+            <div class="mini-stat"><div class="label">Top Offer Score</div><b id="aTopOffer">—</b></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="analytics-two">
+        <div class="card">
+          <div class="section-title">Data Coverage</div>
+          <div class="mini-stat-grid">
+            <div class="mini-stat"><div class="label">Interviews Linked to Applications</div><b id="aLinkedInterviews">0%</b></div>
+            <div class="mini-stat"><div class="label">Offers Linked to Applications</div><b id="aLinkedOffers">0%</b></div>
+            <div class="mini-stat"><div class="label">Open Follow-ups</div><b id="aOpenFU">0</b></div>
+            <div class="mini-stat"><div class="label">Total Records</div><b id="aTotalRecords">0</b></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title">Analytics Note</div>
+          <div class="insight-list">
+            <div class="insight-item"><b>Use the numbers as signals</b><div>Rates describe the records you have entered. They become more useful as applications, interviews, offers and follow-ups are kept current.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Actionable Insights</div>
+        <div class="insight-list" id="aInsights"></div>
+      </div>
+    </section>
+
+    <section id="settings" class="page">
+      <div class="top"><div><h1>Settings & Backup</h1><div class="sub">Local-first data controls.</div></div></div>
+      <div class="card">
+        <div class="section-title">Your data</div>
+        <p class="note">Career OS is local-first in V1. Your records stay in this browser unless you export them. Keep a backup before moving to a new version or device.</p>
+        <div class="settings-actions">
+          <button class="btn settings-action primary-action" onclick="exportData()"><span class="action-row"><i class="action-mark">↓</i><span>Export JSON Backup</span></span><small>Save your complete Career OS dataset.</small></button>
+          <button class="btn settings-action" onclick="exportCSV()"><span class="action-row"><i class="action-mark">CSV</i><span>Export Applications CSV</span></span><small>Export your applications for spreadsheet use.</small></button>
+          <label class="btn settings-action" style="cursor:pointer"><span class="action-row"><i class="action-mark">↑</i><span>Import JSON Backup</span></span><small>Restore a previously exported dataset.</small><input type="file" accept=".json,application/json" style="display:none" onchange="importData(event)"></label>
+          <button class="btn settings-action danger-action" onclick="clearData()"><span class="action-row"><i class="action-mark">×</i><span>Clear Local Data</span></span><small>Remove records from this browser.</small></button>
+        </div>
+        <div class="settings-meta"><span id="settingsDataStatus">Local data status</span><b id="settingsRecordCount">0 records stored</b></div>
+        <div class="backup-health" aria-live="polite">
+          <div class="backup-health-main">
+            <div class="backup-health-label">Backup status</div>
+            <div class="backup-health-title" id="backupHealthTitle">No backup recorded</div>
+            <div class="backup-health-note" id="backupHealthNote">Export a JSON backup to create a portable copy of your Career OS data.</div>
+          </div>
+          <div class="backup-health-meta">
+            <span>Current records</span><b id="backupCurrentCount">0</b>
+            <span>Last backup</span><b id="backupLastDate">Never</b>
+          </div>
+        </div>
+      </div>
+      <div class="settings-grid">
+        <div class="card">
+          <div class="section-title">How to use Career OS</div>
+          <div class="check-list">
+            <div class="check-item"><span class="pill">1</span><div><b>Applications</b><div>Track roles, stages, priority and next action. Edit records anytime; linked application follow-ups stay synchronized.</div></div></div>
+            <div class="check-item"><span class="pill">2</span><div><b>Interviews + Networking</b><div>Link interviews to applications and use relationship follow-ups for the people who can move your search forward.</div></div></div>
+            <div class="check-item"><span class="pill">3</span><div><b>Offers</b><div>Attach offers to applications, compare up to three, and review the structured decision score.</div></div></div>
+            <div class="check-item"><span class="pill">4</span><div><b>Backup before upgrades</b><div>Export JSON before installing a newer ZIP. Restore it in the new version to carry your dataset forward.</div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title">Storage model</div>
+          <div class="insight-list">
+            <div class="insight-item"><b>Local-first</b><div>No account, server or subscription is required for this prototype.</div></div>
+            <div class="insight-item"><b>Browser-bound</b><div>Clearing browser storage or switching devices does not transfer your records automatically.</div></div>
+            <div class="insight-item"><b>Portable</b><div>JSON backup is the source-of-truth transfer format between versions.</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<div class="modal-back" id="followupModalBack">
+  <div class="modal">
+    <div class="top" style="margin-bottom:14px"><div><h1 style="font-size:22px">Add Follow-up</h1><div class="sub">Create a next-action item and give it a due date.</div></div></div>
+    <form id="followupForm">
+      <div class="formgrid">
+        <div class="full"><label>Follow-up title</label><input id="fTitle" required placeholder="e.g. Follow up with recruiter" /></div>
+        <div><label>Company / Person</label><input id="fOwner" placeholder="e.g. Google · Recruiter" /></div>
+        <div><label>Type</label><select id="fType"><option>Application</option><option>Interview</option><option>Networking</option><option>Offer</option><option>Other</option></select></div>
+        <div><label>Due date</label><input id="fDate" type="date" required /></div>
+        <div><label>Priority</label><select id="fPriority"><option>High</option><option selected>Normal</option><option>Low</option></select></div>
+        <div><label>Status</label><select id="fStatus"><option selected>Open</option><option>Completed</option></select></div>
+        <div class="full"><label>Notes</label><textarea id="fNotes" placeholder="What needs to happen next?"></textarea></div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn secondary" onclick="closeFollowupModal()">Cancel</button>
+        <button type="submit" class="btn">Save Follow-up</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-back" id="interviewModalBack">
+  <div class="modal">
+    <div class="top" style="margin-bottom:14px"><div><h1 style="font-size:22px">Add Interview</h1><div class="sub">Create the interview record and preparation workspace.</div></div></div>
+    <form id="interviewForm">
+      <div class="formgrid">
+        <div><label>Company</label><input id="iCompany" required /></div>
+        <div><label>Position</label><input id="iRole" required /></div>
+        <div><label>Date</label><input id="iDate" type="date" required /></div>
+        <div><label>Time</label><input id="iTime" type="time" /></div>
+        <div><label>Linked Application (optional)</label><select id="iApplication"><option value="">No linked application</option></select></div>
+        <div><label>Interview Stage</label><select id="iStage"><option>HR Screen</option><option>Hiring Manager</option><option>Technical</option><option>Case / Assessment</option><option>Panel</option><option>Final</option><option>Other</option></select></div>
+        <div><label>Status</label><select id="iStatus"><option selected>Scheduled</option><option>Completed</option><option>Cancelled</option></select></div>
+        <div class="full"><label>Interviewers</label><input id="iInterviewers" placeholder="Names / roles if known" /></div>
+        <div class="full"><label>Meeting link / location</label><input id="iLocation" /></div>
+        <div class="full"><label>Why this company / role?</label><textarea id="iWhy"></textarea></div>
+        <div class="full"><label>STAR story to prepare</label><textarea id="iStar"></textarea></div>
+        <div class="full"><label>Key questions to practice</label><textarea id="iQuestions"></textarea></div>
+        <div class="full"><label>Post-interview notes</label><textarea id="iNotes"></textarea></div>
+      </div>
+      <div class="formgrid" style="margin-top:12px">
+        <div><label>Priority</label><select id="iPriority"><option>High</option><option selected>Normal</option><option>Low</option></select></div>
+        <div><label>Thank-you sent?</label><select id="iThanksSent"><option>No</option><option>Yes</option></select></div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn secondary" onclick="closeInterviewModal()">Cancel</button>
+        <button type="submit" class="btn">Save Interview</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-back" id="modalBack">
+  <div class="modal">
+    <div class="top" style="margin-bottom:14px"><div><h1 style="font-size:22px">Add Application</h1><div class="sub">Create a new application record.</div></div></div>
+    <form id="appForm">
+      <div class="formgrid">
+        <div><label>Company</label><input id="company" required /></div>
+        <div><label>Position</label><input id="role" required /></div>
+        <div><label>Location</label><input id="location" /></div>
+        <div><label>Salary Range</label><input id="salary" placeholder="e.g. $60k–$75k" /></div>
+        <div><label>Date Applied</label><input id="date" type="date" /></div>
+        <div><label>Status</label>
+          <select id="status">
+            <option>Saved</option><option selected>Applied</option><option>Screening</option>
+            <option>Interview</option><option>Final</option><option>Offer</option>
+            <option>Rejected</option><option>Withdrawn</option>
+          </select>
+        </div>
+        <div class="full"><label>Next Action</label><input id="nextAction" placeholder="e.g. Follow up with recruiter" /></div>
+        <div><label>Follow-up Date</label><input id="followUp" type="date" /></div>
+        <div><label>Priority</label>
+          <select id="priority"><option>High</option><option selected>Normal</option><option>Low</option></select>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn">Save Application</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div class="modal-back" id="networkModalBack">
+  <div class="modal">
+    <div class="top" style="margin-bottom:14px">
+      <div><h1 style="font-size:22px">Add Contact</h1><div class="sub">Keep the relationship and next action in one place.</div></div>
+    </div>
+    <form id="networkForm">
+      <div class="formgrid">
+        <div><label>Name</label><input id="nName" required /></div>
+        <div><label>Company</label><input id="nCompany" /></div>
+        <div><label>Role</label><input id="nRole" /></div>
+        <div><label>Email</label><input id="nEmail" type="email" /></div>
+        <div><label>LinkedIn / Profile URL</label><input id="nLinkedIn" /></div>
+        <div><label>Relationship Stage</label>
+          <select id="nStage"><option>New</option><option selected>Connected</option><option>Conversation</option><option>Referral</option><option>Follow-up</option></select>
+        </div>
+        <div><label>Linked Application (optional)</label><select id="nApplication"><option value="">No linked application</option></select></div>
+        <div><label>How You Met</label><input id="nMet" placeholder="Conference, LinkedIn, college, referral..." /></div>
+        <div><label>Last Contact</label><input id="nLast" type="date" /></div>
+        <div><label>Next Contact</label><input id="nNext" type="date" /></div>
+        <div><label>Next Action</label><input id="nAction" placeholder="Send portfolio, ask for referral..." /></div>
+        <div><label>Referral Opportunity</label><select id="nReferral"><option>No</option><option>Yes</option></select></div>
+        <div class="full"><label>Notes</label><textarea id="nNotes" placeholder="Context, interests, conversation notes, helpful details..."></textarea></div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn secondary" onclick="closeNetworkModal()">Cancel</button>
+        <button type="submit" class="btn">Save Contact</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div class="modal-back" id="offerModalBack">
+  <div class="modal">
+    <div class="top" style="margin-bottom:14px">
+      <div><h1 style="font-size:22px">Add Offer</h1><div class="sub">Capture the full opportunity, not just the headline salary.</div></div>
+    </div>
+    <form id="offerForm">
+      <div class="formgrid">
+        <div class="full"><label>Linked Application (optional)</label><select id="oApplication"><option value="">No linked application</option></select></div>
+        <div><label>Company</label><input id="oCompany" required /></div>
+        <div><label>Role</label><input id="oRole" required /></div>
+        <div><label>Status</label><select id="oStatus"><option selected>Evaluating</option><option>Accepted</option><option>Declined</option><option>Expired</option></select></div>
+        <div><label>Location</label><input id="oLocation" /></div>
+        <div><label>Work Model</label><select id="oWorkModel"><option>On-site</option><option>Hybrid</option><option selected>Remote</option><option>Flexible</option></select></div>
+        <div><label>Base Salary</label><input id="oBase" type="number" min="0" step="100" placeholder="e.g. 75000" /></div>
+        <div><label>Annual Bonus</label><input id="oBonus" type="number" min="0" step="100" placeholder="e.g. 5000" /></div>
+        <div><label>Equity / Other Compensation</label><input id="oEquity" type="number" min="0" step="100" placeholder="e.g. 10000" /></div>
+        <div><label>Estimated Annual Benefits Value</label><input id="oBenefitsValue" type="number" min="0" step="100" placeholder="Optional" /></div>
+        <div><label>Start Date</label><input id="oStartDate" type="date" /></div>
+        <div><label>Decision Deadline</label><input id="oDecisionDate" type="date" /></div>
+        <div><label>Next Action</label><input id="oNextAction" placeholder="e.g. Clarify equity terms" /></div>
+        <div class="full"><label>Notes</label><textarea id="oNotes" placeholder="Offer details, questions, concerns, negotiation notes..."></textarea></div>
+        <div class="full"><div class="section-title" style="margin:4px 0 8px">Weighted Decision Score <span class="note">Rate each factor from 1–10</span></div></div>
+        <div><label>Compensation — 25%</label><input id="scoreComp" type="number" min="1" max="10" value="5" /></div>
+        <div><label>Benefits — 10%</label><input id="scoreBenefits" type="number" min="1" max="10" value="5" /></div>
+        <div><label>Career Growth — 15%</label><input id="scoreGrowth" type="number" min="1" max="10" value="5" /></div>
+        <div><label>Learning — 10%</label><input id="scoreLearning" type="number" min="1" max="10" value="5" /></div>
+        <div><label>Role Fit — 15%</label><input id="scoreFit" type="number" min="1" max="10" value="5" /></div>
+        <div><label>Flexibility — 10%</label><input id="scoreFlex" type="number" min="1" max="10" value="5" /></div>
+        <div><label>Stability — 5%</label><input id="scoreStability" type="number" min="1" max="10" value="5" /></div>
+        <div><label>Culture — 10%</label><input id="scoreCulture" type="number" min="1" max="10" value="5" /></div>
+      </div>
+      <div class="actions"><button type="button" class="btn secondary" onclick="closeOfferModal()">Cancel</button><button type="submit" class="btn">Save Offer</button></div>
+    </form>
+  </div>
+</div>
+
+<script>
+const KEY='apexVerseCareerOS_v1';
+const LEGACY_KEYS=[
+  'apexVerseCareerOS','apexVerseCareerOS_v1_0','apexVerseCareerOS_v1_1','apexVerseCareerOS_v1_2',
+  'apexVerseCareerOS_v1_3','apexVerseCareerOS_v1_4','apexVerseCareerOS_v1_5','apexVerseCareerOS_v1_6',
+  'apexVerseCareerOS_v1_7','apexVerseCareerOS_v1_8','apexVerseCareerOS_v1_9','apexVerseCareerOS_v1_10',
+  'apexVerseCareerOS_v1_11','apexVerseCareerOS_v1_12','apexVerseCareerOS_v1_13'
+];
+const COLLECTIONS=['applications','interviews','followups','networking','offers'];
+function normalizeCareerData(raw){
+  if(typeof raw==='string') raw=JSON.parse(raw.replace(/^\uFEFF/,'').trim());
+  if(Array.isArray(raw)) raw={applications:raw};
+  if(!raw || typeof raw!=='object') throw new Error('Backup must contain a Career OS data object.');
+  const source=(raw.data && typeof raw.data==='object' && !Array.isArray(raw.data))?raw.data:raw;
+  const found=COLLECTIONS.some(k=>Array.isArray(source[k]));
+  if(!found) throw new Error('No Career OS data collections were found.');
+  const normalized={};
+  COLLECTIONS.forEach((key,index)=>{
+    normalized[key]=Array.isArray(source[key])?source[key].map(item=>item&&typeof item==='object'?{...item}:item).filter(item=>item&&typeof item==='object'):[];
+    const prefix=['app','int','fu','net','offer'][index];
+    normalized[key].forEach(item=>{if(!item.id)item.id=newId(prefix)});
+  });
+  return normalized;
+}
+function readStoredData(){
+  const keys=[KEY,...LEGACY_KEYS.filter(k=>k!==KEY)];
+  for(const key of keys){
+    try{
+      const raw=localStorage.getItem(key);
+      if(!raw) continue;
+      const parsed=normalizeCareerData(raw);
+      if(COLLECTIONS.some(k=>parsed[k].length)) return parsed;
+    }catch(e){}
+  }
+  return {applications:[],interviews:[],followups:[],networking:[],offers:[]};
+}
+let data=readStoredData();
+
+function newId(prefix){
+  return (window.crypto&&crypto.randomUUID)?crypto.randomUUID():prefix+'-'+Date.now()+'-'+Math.random().toString(16).slice(2);
+}
+function localDateKey(d=new Date()){
+  const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function addDays(dateKey,days){
+  const d=new Date(dateKey+'T12:00:00');
+  if(Number.isNaN(d.getTime())) return dateKey;
+  d.setDate(d.getDate()+days);
+  return localDateKey(d);
+}
+let toastTimer=null;
+function notify(message){
+  const el=document.getElementById('toast');if(!el)return;
+  el.textContent=message;el.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2400);
+}
+
+function syncApplicationFollowup(app){
+  const sourceId=app.id;
+  const existing=data.followups.find(f=>f.source==='application'&&f.sourceId===sourceId);
+  if(!app.followUp){
+    if(existing) data.followups=data.followups.filter(f=>f!==existing);
+    return;
+  }
+  const title=app.nextAction||('Follow up with '+app.company);
+  const changed=!!existing && (existing.dueDate!==app.followUp || existing.title!==title || existing.priority!==(app.priority||'Normal'));
+  const obj={
+    id:existing?existing.id:newId('fu'),
+    source:'application', sourceId,
+    title, owner:(app.company+' · '+app.role).trim(), type:'Application',
+    dueDate:app.followUp, priority:app.priority||'Normal',
+    status:(existing&&!changed)?(existing.status||'Open'):'Open',
+    notes:existing?existing.notes:'Linked automatically from this application.',
+    createdAt:existing?existing.createdAt:new Date().toISOString()
+  };
+  if(existing){
+    const idx=data.followups.indexOf(existing);
+    data.followups[idx]=obj;
+  }else{
+    data.followups.push(obj);
+  }
+}
+
+function syncAllApplicationFollowups(){
+  const ids=new Set(data.applications.map(a=>a.id));
+  data.followups=data.followups.filter(f=>f.source!=='application'||ids.has(f.sourceId));
+  data.applications.forEach(syncApplicationFollowup);
+}
+
+function save(){
+  syncAllApplicationFollowups();
+  localStorage.setItem(KEY,JSON.stringify(data));
+  window.networkQuickView=window.networkQuickView||'all';
+renderAll();
+}
+
+// Migrate existing application follow-up dates into the unified follow-up engine.
+syncAllApplicationFollowups();
+function openModal(){document.getElementById('modalBack').style.display='flex';}
+function closeModal(){const b=document.getElementById('modalBack'),f=document.getElementById('appForm');b.style.display='none';f.reset();delete f.dataset.editId;f.querySelector('button[type="submit"]').textContent='Save Application';document.querySelector('#modalBack h1').textContent='Add Application';document.querySelector('#modalBack .sub').textContent='Create a new application record.';}
+document.getElementById('appForm').addEventListener('submit',e=>{
+  e.preventDefault();
+
+  // Read fields explicitly by ID. This avoids conflicts with browser globals
+  // such as window.location, window.status, and window.name.
+  const companyEl = document.getElementById('company');
+  const roleEl = document.getElementById('role');
+  const locationEl = document.getElementById('location');
+  const salaryEl = document.getElementById('salary');
+  const dateEl = document.getElementById('date');
+  const statusEl = document.getElementById('status');
+  const nextActionEl = document.getElementById('nextAction');
+  const followUpEl = document.getElementById('followUp');
+  const priorityEl = document.getElementById('priority');
+
+  const form=document.getElementById('appForm');
+  const editId=form.dataset.editId||'';
+  const existing=editId?data.applications.find(x=>x.id===editId):null;
+  const application = {
+    id: editId || ((window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'app-' + Date.now() + '-' + Math.random().toString(16).slice(2)),
+    company: document.getElementById('company').value.trim(),
+    role: document.getElementById('role').value.trim(),
+    location: document.getElementById('location').value.trim(),
+    salary: document.getElementById('salary').value.trim(),
+    date: document.getElementById('date').value,
+    status: document.getElementById('status').value,
+    nextAction: document.getElementById('nextAction').value.trim(),
+    followUp: document.getElementById('followUp').value,
+    priority: document.getElementById('priority').value,
+    createdAt: existing?.createdAt || new Date().toISOString()
+  };
+  if (!application.company || !application.role) {
+    notify('Please enter a company and position.');
+    return;
+  }
+  const idx=data.applications.findIndex(x=>x.id===application.id);
+  if(idx>=0) data.applications[idx]=application; else data.applications.push(application);
+  closeModal();
+  save();
+  notify(idx>=0?'Application updated.':'Application saved.');
+});
+
+document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.nav').forEach(x=>{x.classList.remove('active');x.setAttribute('aria-current','false');}); b.classList.add('active'); b.setAttribute('aria-current','page');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(b.dataset.page).classList.add('active'); renderAll();
+}));
+
+function counts(){
+  const apps=data.applications;
+  const statuses=['Saved','Applied','Screening','Interview','Final','Offer'];
+  const c={}; statuses.forEach(s=>c[s]=apps.filter(a=>a.status===s).length);
+  return c;
+}
+function goToPage(page){
+  const nav=document.querySelector(`.nav[data-page="${page}"]`);
+  if(nav) nav.click();
+}
+function openApplicationQuickView(filter){
+  goToPage('applications');
+  const q=document.getElementById('search');
+  const sf=document.getElementById('statusFilter');
+  const qf=document.getElementById('appQuickFilter');
+  if(q) q.value='';
+  if(sf) sf.value='';
+  if(qf) qf.value=filter||'';
+  renderApplications();
+}
+function openPipelineStage(status){
+  goToPage('applications');
+  const q=document.getElementById('search');
+  const sf=document.getElementById('statusFilter');
+  const qf=document.getElementById('appQuickFilter');
+  if(q) q.value='';
+  if(sf) sf.value=status||'';
+  if(qf) qf.value='';
+  renderApplications();
+}
+function renderDashboard(){
+  const apps=data.applications||[], ints=data.interviews||[], offs=data.offers||[], fus=data.followups||[], nets=data.networking||[];
+  document.getElementById('mApps').textContent=apps.length;
+  document.getElementById('mInterviews').textContent=ints.length;
+  document.getElementById('mOffers').textContent=offs.length;
+  const today=localDateKey();
+  const openFollowups=fus.filter(f=>f.status==='Open');
+  const openDue=openFollowups.filter(f=>f.dueDate&&f.dueDate<=today).length;
+  document.getElementById('mFollowups').textContent=openDue;
+  const c=counts();
+  const pipelineStages=['Saved','Applied','Screening','Interview','Final','Offer'];
+  const pipelineMax=Math.max(1,...pipelineStages.map(s=>c[s]||0));
+  const activePipeline=apps.filter(a=>!['Rejected','Withdrawn'].includes(a.status)).length;
+  document.getElementById('dPipelineActive').textContent=activePipeline+' active';
+  document.getElementById('pipeline').innerHTML=pipelineStages.map(s=>{const value=c[s]||0;const pct=Math.round(value/pipelineMax*100);return `<button type="button" class="pipeline-stage" onclick="openPipelineStage('${s}')" aria-label="View ${s} applications"><div class="stage-top"><b>${value}</b><span class="panel-hint">VIEW</span></div><div>${s}</div><div class="stage-track"><div class="stage-fill" style="width:${pct}%"></div></div></button>`}).join('');
+
+  const activityItems=[
+    ...apps.map(a=>({at:a.createdAt,label:'Application',title:(a.company+' · '+a.role).trim(),meta:a.status+(a.nextAction?' · '+a.nextAction:''),page:'applications',action:`editApplication('${a.id}')`})),
+    ...ints.map(x=>({at:x.createdAt,label:'Interview',title:(x.company+' · '+x.role).trim(),meta:x.status+' · '+(x.stage||'Interview'),page:'interviews',action:`viewInterview('${x.id}')`})),
+    ...nets.map(x=>({at:x.createdAt,label:'Networking',title:x.name,meta:(x.company?x.company+' · ':'')+(x.stage||'Contact'),page:'networking',action:`viewNetwork('${x.id}')`})),
+    ...offs.map(o=>({at:o.createdAt,label:'Offer',title:(o.company+' · '+o.role).trim(),meta:o.status+' · '+offerScore(o)+'/100',page:'offers',action:`editOffer('${o.id}')`}))
+  ].sort((a,b)=>(b.at||'').localeCompare(a.at||'')).slice(0,5);
+  document.getElementById('activity').innerHTML=activityItems.length?activityItems.map(a=>`<button type="button" class="activity-item clickable" onclick="${a.action}" aria-label="Open ${esc(a.title)}"><span class="pill">${esc(a.label)}</span><br><b>${esc(a.title)}</b><br><small>${esc(a.meta)}</small></button>`).join(''):`<div class="empty">Your workspace is ready. Start with an application, interview, contact or offer.</div>`;
+
+  const responses=apps.filter(a=>['Screening','Interview','Final','Offer'].includes(a.status)).length;
+  const responseRate=apps.length?Math.round(responses/apps.length*100):0;
+  const interviewApps=apps.filter(a=>['Interview','Final','Offer'].includes(a.status)).length;
+  const interviewRate=apps.length?Math.round(interviewApps/apps.length*100):0;
+  document.getElementById('dResponse').textContent=responseRate+'%';
+  document.getElementById('dInterviewRate').textContent=interviewRate+'%';
+  document.getElementById('dNetworking').textContent=nets.length;
+  document.getElementById('dReferrals').textContent=nets.filter(x=>x.referral==='Yes').length;
+
+  const activeApps=apps.filter(a=>!['Rejected','Withdrawn','Offer'].includes(a.status)).length;
+  const upcomingInterviews=ints.filter(x=>x.status==='Scheduled'&&x.date&&x.date>=today).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  const missingNextActions=apps.filter(a=>!['Rejected','Withdrawn','Offer'].includes(a.status)&&!a.nextAction).length;
+  const actionOpen=openFollowups.length;
+  const actionLoad=Math.min(actionOpen,8);
+  const activityScore=apps.length?Math.min(100,Math.round(activeApps/apps.length*100)):0;
+  const responseScore=responseRate;
+  const interviewScore=interviewRate;
+  const actionScore=actionOpen?Math.max(20,100-Math.min(80,actionLoad*10)):100;
+  const health=apps.length?Math.round(activityScore*.35+responseScore*.25+interviewScore*.20+actionScore*.20):0;
+  document.getElementById('dHealthScore').textContent=health+'%';
+  document.getElementById('dHealthFill').style.width=health+'%';
+  document.getElementById('dActiveApps').textContent=activeApps;
+  document.getElementById('dUpcomingInterviews').textContent=upcomingInterviews.length;
+  document.getElementById('dOpenActions').textContent=actionOpen;
+  document.getElementById('dActionGaps').textContent=missingNextActions;
+
+  const attention=[];
+  const overdue=fus.filter(f=>f.status==='Open'&&f.dueDate&&f.dueDate<today).length;
+  const dueToday=fus.filter(f=>f.status==='Open'&&f.dueDate===today).length;
+  const offerDeadlines=offs.filter(o=>o.status==='Evaluating'&&o.decisionDate&&o.decisionDate<=today).length;
+  const networkDue=nets.filter(x=>x.nextContact&&x.nextContact<=today).length;
+  const actionTileFollowups=document.getElementById('dActionFollowupCount');
+  const actionTileInterviews=document.getElementById('dActionInterviewCount');
+  const actionTileNetwork=document.getElementById('dActionNetworkCount');
+  const actionTileGaps=document.getElementById('dActionGapCount');
+  if(actionTileFollowups) actionTileFollowups.textContent=actionOpen;
+  if(actionTileInterviews) actionTileInterviews.textContent=upcomingInterviews.length;
+  if(actionTileNetwork) actionTileNetwork.textContent=networkDue;
+  if(actionTileGaps) actionTileGaps.textContent=missingNextActions;
+  const interviewNote=document.getElementById('dActionInterviewNote');
+  if(interviewNote) interviewNote.textContent=upcomingInterviews.length?`${upcomingInterviews[0].company} · ${upcomingInterviews[0].date}`:'No upcoming interviews';
+  document.getElementById('dActionFollowups')?.classList.toggle('alert',!!actionOpen);
+  document.getElementById('dActionInterviews')?.classList.toggle('alert',!!upcomingInterviews.length);
+  document.getElementById('dActionNetwork')?.classList.toggle('alert',!!networkDue);
+  document.getElementById('dActionGapsTile')?.classList.toggle('alert',!!missingNextActions);
+  if(overdue) attention.push(`<button type="button" class="dashboard-click-item" onclick="goToPage('followups');setFollowupQuick('Overdue')"><b>${overdue} overdue follow-up${overdue===1?'':'s'}</b><div>Clear these before adding more open tasks.</div></button>`);
+  if(dueToday) attention.push(`<button type="button" class="dashboard-click-item" onclick="goToPage('followups');setFollowupQuick('Due')"><b>${dueToday} follow-up${dueToday===1?'':'s'} due today</b><div>Today's next actions are ready in Follow-ups.</div></button>`);
+  if(upcomingInterviews.length){const x=upcomingInterviews[0];attention.push(`<button type="button" class="dashboard-click-item" onclick="viewInterview('${x.id}')"><b>Next interview: ${esc(x.company)}</b><div>${esc(x.date)}${x.time?' · '+esc(x.time):''} · ${esc(x.stage||'Interview')}</div></button>`);}
+  if(offerDeadlines) attention.push(`<button type="button" class="dashboard-click-item" onclick="goToPage('offers')"><b>${offerDeadlines} offer deadline${offerDeadlines===1?'':'s'} need attention</b><div>Review evaluating offers and update the next decision action.</div></button>`);
+  if(networkDue) attention.push(`<button type="button" class="dashboard-click-item" onclick="goToPage('networking');window.networkQuickView='due';renderNetworking()"><b>${networkDue} networking follow-up${networkDue===1?'':'s'} due</b><div>Reconnect with the people already in your pipeline.</div></button>`);
+  if(missingNextActions) attention.push(`<button type="button" class="dashboard-click-item" onclick="openApplicationQuickView('action')"><b>${missingNextActions} active application${missingNextActions===1?'':'s'} need a next action</b><div>Give each live opportunity a concrete next step.</div></button>`);
+  if(!apps.length&&!ints.length&&!nets.length&&!offs.length) attention.push(`<button type="button" class="dashboard-click-item" onclick="openModal()"><b>Start your search</b><div>Add your first record to activate the career workspace.</div></button>`);
+  if(!attention.length) attention.push(`<div class="insight-item"><b>Nothing urgent</b><div>Your current workspace has no overdue actions.</div></div>`);
+  document.getElementById('dAttention').innerHTML='<div class="attention-list">'+attention.slice(0,5).join('')+'</div>';
+
+  const next=[];
+  if(overdue) next.push({title:'Clear overdue follow-ups',detail:`${overdue} open item${overdue===1?'':'s'} need attention`,page:'followups',action:'Open Follow-ups'});
+  if(upcomingInterviews.length) next.push({title:'Prepare for your next interview',detail:`${upcomingInterviews[0].company} · ${upcomingInterviews[0].date}${upcomingInterviews[0].time?' · '+upcomingInterviews[0].time:''}`,page:'interviews',action:'Open Interviews'});
+  if(missingNextActions) next.push({title:'Add next actions to live applications',detail:`${missingNextActions} active application${missingNextActions===1?'':'s'} currently have no next step`,page:'applications',action:'Review Applications'});
+  if(networkDue) next.push({title:'Reconnect with your network',detail:`${networkDue} contact${networkDue===1?'':'s'} are due for follow-up`,page:'networking',action:'Open Networking'});
+  if(offerDeadlines) next.push({title:'Review offer decisions',detail:`${offerDeadlines} evaluating offer${offerDeadlines===1?'':'s'} have reached their deadline`,page:'offers',action:'Review Offers'});
+  if(!next.length && apps.length) next.push({title:'Keep the pipeline moving',detail:'Your workspace is clear. Add applications, contacts or preparation work to maintain momentum.',page:'applications',action:'Open Applications'});
+  if(!next.length) next.push({title:'Start your career search',detail:'Add your first application to activate your command center.',page:'applications',action:'Add Application'});
+  document.getElementById('dNextActions').innerHTML=next.slice(0,4).map(x=>`<div class="next-action-item"><div class="copy"><b>${esc(x.title)}</b><span>${esc(x.detail)}</span></div><button class="small-btn" onclick="goToPage('${x.page}')">${esc(x.action)}</button></div>`).join('');
+}
+function applicationQuickMatch(a,qf){
+  const active=!['Rejected','Withdrawn','Offer'].includes(a.status);
+  if(!qf) return true;
+  if(qf==='active') return active;
+  if(qf==='action') return active&&!a.nextAction;
+  if(qf==='interview') return data.interviews.some(x=>x.applicationId===a.id);
+  if(qf==='offer') return data.offers.some(x=>x.applicationId===a.id);
+  return true;
+}
+function updateApplicationIntel(){
+  const apps=data.applications||[];
+  const values={
+    active:apps.filter(a=>!['Rejected','Withdrawn','Offer'].includes(a.status)).length,
+    action:apps.filter(a=>!['Rejected','Withdrawn','Offer'].includes(a.status)&&!a.nextAction).length,
+    interview:apps.filter(a=>data.interviews.some(x=>x.applicationId===a.id)).length,
+    offer:apps.filter(a=>data.offers.some(x=>x.applicationId===a.id)).length
+  };
+  Object.entries(values).forEach(([key,value])=>{const el=document.getElementById('appIntel'+key.charAt(0).toUpperCase()+key.slice(1));if(el)el.textContent=value;});
+  const filter=document.getElementById('appQuickFilter')?.value||'';
+  document.querySelectorAll('[data-app-view]').forEach(el=>{
+    const active=el.dataset.appView===filter;
+    el.classList.toggle('active',active);
+    el.setAttribute('aria-selected',active?'true':'false');
+  });
+}
+function setApplicationQuick(filter){
+  const qf=document.getElementById('appQuickFilter');
+  if(!qf)return;
+  qf.value=filter||'';
+  const sf=document.getElementById('statusFilter');
+  const q=document.getElementById('search');
+  if(sf)sf.value='';
+  if(q)q.value='';
+  renderApplications();
+}
+function clearApplicationFilters(){
+  const q=document.getElementById('search');
+  const sf=document.getElementById('statusFilter');
+  const qf=document.getElementById('appQuickFilter');
+  if(q)q.value='';
+  if(sf)sf.value='';
+  if(qf)qf.value='';
+  renderApplications();
+  notify('Application filters cleared.');
+}
+function applicationFollowupLabel(a,today){
+  if(!a.followUp) return '';
+  if(a.followUp<today) return `<span class="app-followup overdue">Follow-up overdue · ${esc(a.followUp)}</span>`;
+  if(a.followUp===today) return `<span class="app-followup today">Follow-up due today</span>`;
+  return `<span class="app-followup upcoming">Follow-up · ${esc(a.followUp)}</span>`;
+}
+function renderApplications(){
+  const q=(document.getElementById('search')?.value||'').toLowerCase().trim();
+  const sf=document.getElementById('statusFilter')?.value||'';
+  const qf=document.getElementById('appQuickFilter')?.value||'';
+  const today=localDateKey();
+  updateApplicationIntel();
+  const apps=data.applications.filter(a=>{
+    const textOk=!q||(a.company||'').toLowerCase().includes(q)||(a.role||'').toLowerCase().includes(q);
+    const statusOk=!sf||a.status===sf;
+    return textOk&&statusOk&&applicationQuickMatch(a,qf);
+  });
+  const meta=document.getElementById('applicationResultMeta');
+  if(meta){
+    const filters=[];
+    if(q)filters.push(`Search: ${esc(q)}`);
+    if(sf)filters.push(`Status: ${esc(sf)}`);
+    if(qf)filters.push(`View: ${esc(qf==='active'?'Active search':qf==='action'?'Needs action':qf==='interview'?'Has interview':'Has offer')}`);
+    meta.innerHTML=`<b>${apps.length} application${apps.length===1?'':'s'}</b>${filters.length?`<span class="filter-state">${filters.join(' · ')}</span>`:'<span>All applications</span>'}`;
+  }
+  if(!apps.length){document.getElementById('appsTable').innerHTML='<div class="empty">No applications match the current view. Clear the filters or add a new application.</div>';return;}
+  document.getElementById('appsTable').innerHTML=`<div class="apps-table-wrap"><table><thead><tr><th>Company</th><th>Role</th><th>Status</th><th>Applied</th><th>Next Action</th><th>Links</th><th></th></tr></thead><tbody>${apps.map(a=>{
+    const linkedInts=data.interviews.filter(x=>x.applicationId===a.id).length;
+    const linkedOffs=data.offers.filter(x=>x.applicationId===a.id).length;
+    return `<tr>
+    <td><b>${esc(a.company)}</b></td><td>${esc(a.role)}</td><td><span class="pill">${esc(a.status)}</span></td>
+    <td>${esc(a.date||'—')}</td><td>${esc(a.nextAction||'—')}${a.priority==='High'?`<div class="link-badges"><span class="link-badge">High priority</span></div>`:''}${applicationFollowupLabel(a,today)}</td>
+    <td><div class="link-badges">${linkedInts?`<button type="button" class="link-badge" onclick="openApplicationLinks('${a.id}','interview')">${linkedInts} interview${linkedInts===1?'':'s'}</button>`:''}${linkedOffs?`<button type="button" class="link-badge" onclick="openApplicationLinks('${a.id}','offer')">${linkedOffs} offer${linkedOffs===1?'':'s'}</button>`:''}${!linkedInts&&!linkedOffs?'<span class="link-badge">No linked records</span>':''}</div></td>
+    <td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="small-btn" onclick="editApplication('${a.id}')">Edit</button><button class="small-btn danger" onclick="deleteApp('${a.id}')">Delete</button></div></td>
+  </tr>`;}).join('')}</tbody></table></div>`;
+}
+function openApplicationLinks(id,type){
+  const app=data.applications.find(a=>a.id===id);if(!app)return;
+  if(type==='interview'){
+    goToPage('interviews');
+    const filter=document.getElementById('interviewFilter');
+    if(filter){filter.value='';}
+    renderInterviews();
+    notify(`Opened Interviews for ${app.company}.`);
+    return;
+  }
+  goToPage('offers');
+  const filter=document.getElementById('offerFilter');
+  if(filter)filter.value='';
+  renderOffers();
+  notify(`Opened Offers for ${app.company}.`);
+}
+function editApplication(id){
+  const a=data.applications.find(x=>x.id===id);if(!a)return;
+  openModal();
+  document.querySelector('#modalBack h1').textContent='Edit Application';
+  document.querySelector('#modalBack .sub').textContent='Update the application record without losing linked follow-ups.';
+  document.getElementById('company').value=a.company||'';document.getElementById('role').value=a.role||'';document.getElementById('location').value=a.location||'';document.getElementById('salary').value=a.salary||'';document.getElementById('date').value=a.date||'';document.getElementById('status').value=a.status||'Applied';document.getElementById('nextAction').value=a.nextAction||'';document.getElementById('followUp').value=a.followUp||'';document.getElementById('priority').value=a.priority||'Normal';
+  const form=document.getElementById('appForm');form.dataset.editId=id;form.querySelector('button[type="submit"]').textContent='Save Changes';
+}
+function deleteApp(id){
+  if(!confirm('Delete this application? Linked interviews and offers will stay, but their application link will be removed.'))return;
+  data.applications=data.applications.filter(a=>a.id!==id);
+  data.followups=data.followups.filter(f=>!(f.source==='application'&&f.sourceId===id));
+  data.interviews.forEach(x=>{if(x.applicationId===id)x.applicationId='';});
+  data.offers.forEach(x=>{if(x.applicationId===id)x.applicationId='';});
+  data.networking.forEach(x=>{if(x.applicationId===id)x.applicationId='';});
+  save();notify('Application deleted.');
+}
+function renderAnalytics(){
+  const apps=data.applications||[];
+  const ints=data.interviews||[];
+  const fus=data.followups||[];
+  const nets=data.networking||[];
+  const offs=data.offers||[];
+
+  const setText=(id,value)=>{
+    const el=document.getElementById(id);
+    if(el) el.textContent=value;
+  };
+  const setHtml=(id,value)=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML=value;
+  };
+
+  const total=apps.length;
+  const responses=apps.filter(a=>['Screening','Interview','Final','Offer'].includes(a.status)).length;
+  const interviewApps=apps.filter(a=>['Interview','Final','Offer'].includes(a.status)).length;
+  const offerApps=apps.filter(a=>a.status==='Offer').length;
+  const responseRate=total?Math.round(responses/total*100):0;
+  const interviewRate=total?Math.round(interviewApps/total*100):0;
+  const offerCount=offs.length;
+  const offerRate=total?Math.round(offerApps/total*100):0;
+
+  const today=localDateKey();
+  const open=fus.filter(x=>x.status==='Open');
+  const overdue=open.filter(x=>x.dueDate && x.dueDate<today).length;
+  const dueToday=open.filter(x=>x.dueDate===today).length;
+  const upcoming=open.filter(x=>x.dueDate && x.dueDate>today).length;
+  const completed=fus.filter(x=>x.status==='Completed').length;
+  const highFU=open.filter(x=>x.priority==='High').length;
+  const evaluating=offs.filter(o=>o.status==='Evaluating').length;
+  const topOffer=offs.reduce((m,o)=>Math.max(m,offerScore(o)),0);
+
+  // Top KPI cards
+  setText('aApps',total);
+  setText('aResponse',responseRate+'%');
+  setText('aInterview',interviewRate+'%');
+  setText('aOffer',offerRate+'%');
+  setText('aActive',apps.filter(a=>!['Rejected','Withdrawn','Offer'].includes(a.status)).length);
+  setText('aInterviews',ints.length);
+  setText('aRecordedOffers',offerCount);
+  setText('aNetworking',nets.length);
+  setText('aOverdue',overdue);
+
+  // Follow-up health
+  setText('aDueToday',dueToday);
+  setText('aUpcoming',upcoming);
+  setText('aCompletedFU',completed);
+  setText('aHighFU',highFU);
+
+  // Networking and offers
+  const referralCount=nets.filter(x=>x.referral==='Yes').length;
+  setText('aReferrals',referralCount);
+  setText('aOffers',offerCount);
+  setText('aEvaluating',evaluating);
+  setText('aTopOffer',offerCount?topOffer+'/100':'—');
+
+  // Application funnel
+  const stages=[
+    ['Applied',apps.filter(a=>['Applied','Screening','Interview','Final','Offer'].includes(a.status)).length],
+    ['Response / Screening',apps.filter(a=>['Screening','Interview','Final','Offer'].includes(a.status)).length],
+    ['Interview',apps.filter(a=>['Interview','Final','Offer'].includes(a.status)).length],
+    ['Final',apps.filter(a=>['Final','Offer'].includes(a.status)).length],
+    ['Offer',apps.filter(a=>a.status==='Offer').length]
+  ];
+  const maxStage=Math.max(total,1);
+  setHtml('aFunnel',stages.map(([label,v])=>`<div class="bar-row"><div class="bar-label">${label}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/maxStage*100)}%"></div></div><div class="bar-value">${v}</div></div>`).join(''));
+
+  // Last 6 calendar months. Application and interview dates are independent
+  // records in V1, so we show them as two separate bars.
+  const months=[];
+  const now=new Date();
+  for(let i=5;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    months.push({
+      key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,
+      label:d.toLocaleString(undefined,{month:'short'})
+    });
+  }
+  const appCounts=months.map(m=>apps.filter(a=>String(a.date||'').slice(0,7)===m.key).length);
+  const intCounts=months.map(m=>ints.filter(x=>String(x.date||'').slice(0,7)===m.key).length);
+  const maxMonth=Math.max(...appCounts,...intCounts,1);
+
+  setHtml('aMonths',months.map((m,i)=>{
+    const aw=appCounts[i] ? Math.max(3,Math.round(appCounts[i]/maxMonth*100)) : 0;
+    const iw=intCounts[i] ? Math.max(3,Math.round(intCounts[i]/maxMonth*100)) : 0;
+    return `<div class="month-row" title="${m.label}: ${appCounts[i]} applications, ${intCounts[i]} interviews">
+      <div class="month-label">${m.label}</div>
+      <div class="month-bars">
+        <div class="month-track"><div class="month-fill" style="width:${aw}%"></div></div>
+        <div class="month-track"><div class="month-fill secondary" style="width:${iw}%"></div></div>
+      </div>
+      <div class="month-values"><span>${appCounts[i]} apps</span><span>${intCounts[i]} interviews</span></div>
+    </div>`;
+  }).join(''));
+
+  // Data coverage
+  const linkedInterviews=ints.filter(x=>x.applicationId&&apps.some(a=>a.id===x.applicationId)).length;
+  const linkedOffers=offs.filter(x=>x.applicationId&&apps.some(a=>a.id===x.applicationId)).length;
+  const openFollowups=open.length;
+  const totalRecords=apps.length+ints.length+fus.length+nets.length+offs.length;
+  setText('aLinkedInterviews',ints.length?Math.round(linkedInterviews/ints.length*100)+'%':'—');
+  setText('aLinkedOffers',offs.length?Math.round(linkedOffers/offs.length*100)+'%':'—');
+  setText('aOpenFU',openFollowups);
+  setText('aTotalRecords',totalRecords);
+
+  // Actionable insights
+  const insights=[];
+  if(overdue) insights.push(`<div class="insight-item"><b>Follow-up bottleneck</b><div>${overdue} open follow-up${overdue===1?' is':'s are'} overdue. Clearing these is the highest immediate task.</div></div>`);
+  if(responseRate<20 && total>=5) insights.push(`<div class="insight-item"><b>Low response signal</b><div>Your current response rate is ${responseRate}%. Review targeting, role fit and application quality before simply increasing application volume.</div></div>`);
+  if(responseRate>=20) insights.push(`<div class="insight-item"><b>Response signal is healthy</b><div>${responseRate}% of applications have progressed beyond the initial application stage.</div></div>`);
+  if(referralCount) insights.push(`<div class="insight-item"><b>Networking opportunity</b><div>${referralCount} contact${referralCount===1?'':'s'} ${referralCount===1?'is':'are'} marked as referral opportunit${referralCount===1?'y':'ies'}.</div></div>`);
+  if(offerCount) insights.push(`<div class="insight-item"><b>Offer intelligence</b><div>You have ${offerCount} recorded offer${offerCount===1?'':'s'} with a current top decision score of ${topOffer}/100.</div></div>`);
+  if(!insights.length) insights.push(`<div class="insight-item"><b>Build your dataset</b><div>Add more applications, interviews and contacts to unlock more meaningful patterns.</div></div>`);
+  setHtml('aInsights',insights.join(''));
+}
+
+function seedDemo(){
+  if(data.applications.length && !confirm('Add demo data to the existing records?')) return;
+  const demo=[
+    ['Acme Labs','Product Analyst','Remote','$65k–$80k','Applied','2026-10-01','Follow up with recruiter','2026-10-06','High'],
+    ['Northstar','Marketing Associate','New York','$55k–$70k','Interview','2026-09-28','Prepare STAR stories','2026-10-05','High'],
+    ['Vertex Systems','Data Analyst','Bengaluru','₹8L–₹12L','Screening','2026-10-02','Send portfolio','2026-10-07','Normal'],
+    ['Lumen Studio','Operations Intern','Remote','$25k–$35k','Saved','','Review job description','','Low'],
+    ['Orion Group','Business Analyst','Chicago','$70k–$85k','Offer','2026-09-15','Compare offer','2026-10-04','High']
+  ];
+  demo.forEach(d=>data.applications.push({id:crypto.randomUUID(),company:d[0],role:d[1],location:d[2],salary:d[3],status:d[4],date:d[5],nextAction:d[6],followUp:d[7],priority:d[8],createdAt:new Date().toISOString()}));
+  save();
+  notify('Demo applications added.');
+}
+function getTotalRecordCount(){
+  return COLLECTIONS.reduce((n,k)=>n+(Array.isArray(data[k])?data[k].length:0),0);
+}
+function exportData(){
+  const exportedAt=new Date().toISOString();
+  const recordCount=getTotalRecordCount();
+  const backup={
+    format:'APEX_VERSE_CAREER_OS_BACKUP',
+    version:'1.26',
+    exportedAt,
+    recordCount,
+    data:JSON.parse(JSON.stringify(data))
+  };
+  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='apex-verse-career-os-backup.json';document.body.appendChild(a);a.click();a.remove();
+  localStorage.setItem('apexVerseCareerOS_lastBackup',backup.exportedAt);
+  localStorage.setItem('apexVerseCareerOS_lastBackupMeta',JSON.stringify({exportedAt:backup.exportedAt,recordCount:backup.recordCount,version:backup.version}));
+  renderSettingsStatus();
+  setTimeout(()=>URL.revokeObjectURL(url),0);
+  notify('JSON backup exported.');
+}
+function exportCSV(){
+  const headers=['Company','Role','Location','Salary','Date Applied','Status','Next Action','Follow-up Date','Priority'];
+  const rows=(data.applications||[]).map(a=>[a.company,a.role,a.location,a.salary,a.date,a.status,a.nextAction,a.followUp,a.priority]);
+  const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='apex-verse-career-os-applications.csv';a.click();URL.revokeObjectURL(a.href);
+  notify('Applications CSV exported.');
+}
+function importData(e){
+  const input=e.target,file=input.files&&input.files[0];
+  if(!file)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const restored=normalizeCareerData(r.result);
+      data=restored;
+      save();
+      const total=COLLECTIONS.reduce((n,k)=>n+data[k].length,0);
+      notify(`Backup restored · ${total} records`);
+    }catch(err){
+      console.error('Career OS import failed:',err);
+      notify(err&&err.message?'Import failed: '+err.message:'Import failed. Please choose a Career OS JSON backup.');
+    }finally{
+      input.value='';
+    }
+  };
+  r.onerror=()=>{input.value='';notify('Import failed: the backup file could not be read.');};
+  r.readAsText(file);
+}
+function clearData(){if(confirm('Delete all locally stored Career OS data?')){data={applications:[],interviews:[],followups:[],networking:[],offers:[]};save();notify('Local data cleared. Your previous backup remains available.');}}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function populateInterviewApplications(current=''){const sel=document.getElementById('iApplication');if(!sel)return;sel.innerHTML='<option value="">No linked application</option>'+data.applications.map(a=>`<option value="${esc(a.id)}">${esc(a.company)} · ${esc(a.role)}</option>`).join('');if(current&&data.applications.some(a=>a.id===current))sel.value=current;}
+function openInterviewModal(){populateInterviewApplications();document.getElementById('interviewModalBack').style.display='flex';}
+function closeInterviewModal(){const back=document.getElementById('interviewModalBack');const form=document.getElementById('interviewForm');back.style.display='none';form.reset();delete form.dataset.editId;form.querySelector('button[type="submit"]').textContent='Save Interview';document.querySelector('#interviewModalBack h1').textContent='Add Interview';document.querySelector('#interviewModalBack .sub').textContent='Create the interview record and preparation workspace.';}
+function syncInterviewFollowup(interview){
+  const existing=data.followups.find(f=>f.source==='interview'&&f.sourceId===interview.id);
+  if(interview.status!=='Completed'||interview.thanksSent||!interview.date||interview.status==='Cancelled'){if(existing)data.followups=data.followups.filter(f=>f!==existing);return;}
+  const obj={id:existing?.id||newId('fu'),source:'interview',sourceId:interview.id,title:'Send thank-you — '+interview.company,owner:(interview.company+' · '+interview.role).trim(),type:'Interview',dueDate:addDays(interview.date,1),priority:interview.priority||'Normal',status:existing?.status||'Open',notes:'Interview follow-up. Mark this completed after the thank-you is sent.',createdAt:existing?.createdAt||new Date().toISOString()};
+  if(existing) Object.assign(existing,obj); else data.followups.push(obj);
+}
+document.getElementById('iApplication').addEventListener('change',()=>{const id=document.getElementById('iApplication').value;if(!id)return;const a=data.applications.find(x=>x.id===id);if(!a)return;document.getElementById('iCompany').value=a.company||'';document.getElementById('iRole').value=a.role||'';});
+document.getElementById('interviewForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const form=document.getElementById('interviewForm');
+  const editId=form.dataset.editId||'';
+  const obj={
+    id:editId || ((window.crypto&&crypto.randomUUID)?crypto.randomUUID():'int-'+Date.now()),
+    applicationId:document.getElementById('iApplication').value,
+    company:document.getElementById('iCompany').value.trim(),
+    role:document.getElementById('iRole').value.trim(),
+    date:document.getElementById('iDate').value,
+    time:document.getElementById('iTime').value,
+    stage:document.getElementById('iStage').value,
+    status:document.getElementById('iStatus').value,
+    interviewers:document.getElementById('iInterviewers').value.trim(),
+    location:document.getElementById('iLocation').value.trim(),
+    why:document.getElementById('iWhy').value.trim(),
+    star:document.getElementById('iStar').value.trim(),
+    questions:document.getElementById('iQuestions').value.trim(),
+    notes:document.getElementById('iNotes').value.trim(),
+    priority:document.getElementById('iPriority').value,
+    thanksSent:document.getElementById('iThanksSent').value==='Yes',
+    createdAt:new Date().toISOString()
+  };
+  if(!obj.company||!obj.role||!obj.date){notify('Please enter a company, position and date.');return;}
+  const idx=data.interviews.findIndex(x=>x.id===obj.id);
+  if(idx>=0) data.interviews[idx]=obj; else data.interviews.push(obj);
+  syncInterviewFollowup(obj);
+  if(obj.applicationId){
+    const app=data.applications.find(a=>a.id===obj.applicationId);
+    if(app&&!['Final','Offer','Rejected','Withdrawn'].includes(app.status)&&obj.status!=='Cancelled') app.status='Interview';
+  }
+  closeInterviewModal();save();notify(idx>=0?'Interview updated.':'Interview saved.');
+});
+function renderInterviews(){
+  const list=document.getElementById('interviewList');if(!list)return;
+  const filter=document.getElementById('interviewFilter')?.value||'';
+  const qf=document.getElementById('interviewQuickFilter')?.value||'';
+  const today=localDateKey();
+  document.querySelectorAll('[data-interview-view]').forEach(el=>{
+    const active=el.dataset.interviewView===qf;
+    el.classList.toggle('active',active);
+    el.setAttribute('aria-selected',active?'true':'false');
+  });
+  const all=data.interviews;
+  const upcoming=all.filter(x=>x.status==='Scheduled'&&x.date&&x.date>=today);
+  const todayItems=all.filter(x=>x.status==='Scheduled'&&x.date===today);
+  const thanks=all.filter(x=>x.status==='Completed'&&!x.thanksSent);
+  const high=all.filter(x=>x.priority==='High'&&x.status!=='Cancelled');
+  document.getElementById('iScheduled').textContent=all.filter(x=>x.status==='Scheduled').length;
+  document.getElementById('iCompleted').textContent=all.filter(x=>x.status==='Completed').length;
+  document.getElementById('iHigh').textContent=high.length;
+  document.getElementById('iThanks').textContent=thanks.length;
+  const iu=document.getElementById('interviewIntelUpcoming');if(iu)iu.textContent=upcoming.length;
+  const it=document.getElementById('interviewIntelToday');if(it)it.textContent=todayItems.length;
+  const ith=document.getElementById('interviewIntelThanks');if(ith)ith.textContent=thanks.length;
+  const ih=document.getElementById('interviewIntelHigh');if(ih)ih.textContent=high.length;
+  const items=[...all].filter(x=>{
+    const statusOk=!filter||x.status===filter;
+    const quickOk=!qf || (qf==='upcoming'&&x.status==='Scheduled'&&x.date&&x.date>=today) || (qf==='today'&&x.status==='Scheduled'&&x.date===today) || (qf==='thanks'&&x.status==='Completed'&&!x.thanksSent) || (qf==='high'&&x.priority==='High'&&x.status!=='Cancelled');
+    return statusOk&&quickOk;
+  }).sort((a,b)=>((a.date||'')+(a.time||'')).localeCompare((b.date||'')+(b.time||'')));
+  if(!items.length){list.innerHTML='<div class="empty">No interviews match this view. Add an interview or adjust the filters to continue.</div>';return;}
+  list.innerHTML='<div class="interview-grid">'+items.map(x=>{
+    const when=(x.date||'')+(x.time?' · '+x.time:'');
+    const prep=[x.why,x.star,x.questions,x.notes].filter(Boolean).length;
+    let thanksLabel='';
+    if(x.status==='Completed') thanksLabel=x.thanksSent?'Thank-you sent':'Thank-you pending';
+    else if(x.status==='Scheduled') thanksLabel='Thank-you after interview';
+    else if(x.status==='Cancelled') thanksLabel='No thank-you needed';
+    return `<div class="interview-card"><div class="row"><div><h3>${esc(x.company)} · ${esc(x.role)}</h3><div class="meta">${esc(when)}<br>${esc(x.stage)} · ${esc(x.status)}${x.priority==='High'?' · High priority':''}<br>${x.interviewers?esc(x.interviewers):'Interviewer not added'}${x.location?' · '+esc(x.location):''}${x.applicationId?`<br><span class="link-badge">Linked application</span>`:''}</div></div><span class="pill">${thanksLabel}</span></div><div class="prep-block"><div class="label">Preparation workspace</div><div class="meta">${prep}/4 sections filled</div></div><div class="interview-actions"><button class="small-btn" onclick="viewInterview('${x.id}')">View / Edit Prep</button>${x.applicationId&&data.applications.some(a=>a.id===x.applicationId)?`<button class="small-btn" onclick="goToPage('applications')">Open Application</button>`:''}<button class="small-btn danger" onclick="deleteInterview('${x.id}')">Delete</button></div></div>`;
+  }).join('')+'</div>';
+}
+function setInterviewQuick(filter){
+  const sel=document.getElementById('interviewQuickFilter');
+  if(!sel)return;
+  sel.value=filter;
+  renderInterviews();
+}
+
+function viewInterview(id){
+  const x=data.interviews.find(i=>i.id===id);if(!x)return;
+  const back=document.getElementById('interviewModalBack');populateInterviewApplications(x.applicationId||'');back.style.display='flex';document.querySelector('#interviewModalBack h1').textContent='Edit Interview';document.querySelector('#interviewModalBack .sub').textContent='Update the interview record and preparation workspace.';
+  document.getElementById('iCompany').value=x.company||'';document.getElementById('iRole').value=x.role||'';document.getElementById('iDate').value=x.date||'';document.getElementById('iTime').value=x.time||'';
+  document.getElementById('iStage').value=x.stage||'HR Screen';document.getElementById('iStatus').value=x.status||'Scheduled';document.getElementById('iInterviewers').value=x.interviewers||'';document.getElementById('iLocation').value=x.location||'';
+  document.getElementById('iWhy').value=x.why||'';document.getElementById('iStar').value=x.star||'';document.getElementById('iQuestions').value=x.questions||'';document.getElementById('iNotes').value=x.notes||'';document.getElementById('iPriority').value=x.priority||'Normal';document.getElementById('iThanksSent').value=x.thanksSent?'Yes':'No';
+  const form=document.getElementById('interviewForm');form.dataset.editId=id;form.querySelector('button[type="submit"]').textContent='Save Changes';
+}
+function deleteInterview(id){if(confirm('Delete this interview?')){data.interviews=data.interviews.filter(x=>x.id!==id);data.followups=data.followups.filter(f=>!(f.source==='interview'&&f.sourceId===id));save();notify('Interview deleted.');}}
+
+
+function openFollowupModal(){document.getElementById('followupModalBack').style.display='flex';}
+function closeFollowupModal(){const b=document.getElementById('followupModalBack');const f=document.getElementById('followupForm');b.style.display='none';f.reset();delete f.dataset.editId;f.querySelector('button[type="submit"]').textContent='Save Follow-up';}
+document.getElementById('followupForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const form=e.currentTarget, editId=form.dataset.editId||'';
+  const existing=editId?data.followups.find(x=>x.id===editId):null;
+  const obj={
+    id:editId||newId('fu'),
+    title:document.getElementById('fTitle').value.trim(),
+    owner:document.getElementById('fOwner').value.trim(),
+    type:document.getElementById('fType').value,
+    dueDate:document.getElementById('fDate').value,
+    priority:document.getElementById('fPriority').value,
+    status:document.getElementById('fStatus').value,
+    notes:document.getElementById('fNotes').value.trim(),
+    createdAt:existing?.createdAt||new Date().toISOString()
+  };
+  if(!obj.title||!obj.dueDate){notify('Please enter a title and due date.');return;}
+  if(existing?.source){
+    obj.source=existing.source;obj.sourceId=existing.sourceId;
+    if(existing.source==='application'){
+      const app=data.applications.find(a=>a.id===existing.sourceId);
+      if(app){app.nextAction=obj.title;app.followUp=obj.dueDate;app.priority=obj.priority;obj.owner=(app.company+' · '+app.role).trim();obj.type='Application';}
+    }else if(existing.source==='networking'){
+      const c=data.networking.find(n=>n.id===existing.sourceId);
+      if(c){c.nextAction=obj.title;c.nextContact=obj.dueDate;obj.owner=(c.name+(c.company?' · '+c.company:'')).trim();obj.type='Networking';}
+    }else if(existing.source==='offer'){
+      const o=data.offers.find(v=>v.id===existing.sourceId);
+      if(o){o.nextAction=obj.title;o.decisionDate=obj.dueDate;obj.owner=(o.company+' · '+o.role).trim();obj.type='Offer';}
+    }else if(existing.source==='interview'){
+      const i=data.interviews.find(v=>v.id===existing.sourceId);
+      if(i){obj.owner=(i.company+' · '+i.role).trim();obj.type='Interview';}
+    }
+  }
+  const idx=data.followups.findIndex(x=>x.id===obj.id);
+  if(idx>=0)data.followups[idx]=obj;else data.followups.push(obj);
+  closeFollowupModal();save();notify(idx>=0?'Follow-up updated.':'Follow-up saved.');
+});
+function followState(x){
+  if(x.status==='Completed')return 'Completed';
+  const t=localDateKey();
+  if(x.dueDate<t)return 'Overdue';
+  if(x.dueDate===t)return 'Due';
+  return 'Upcoming';
+}
+function renderFollowups(){
+  const list=document.getElementById('followupList');if(!list)return;
+  const filter=document.getElementById('followFilter')?.value||'';
+  document.querySelectorAll('[data-followup-view]').forEach(el=>{
+    const active=el.dataset.followupView===filter;
+    el.classList.toggle('active',active);
+    el.setAttribute('aria-selected',active?'true':'false');
+  });
+  const all=data.followups;
+  const today=localDateKey();
+  document.getElementById('fToday').textContent=all.filter(x=>x.status==='Open'&&x.dueDate===today).length;
+  document.getElementById('fOverdue').textContent=all.filter(x=>x.status==='Open'&&x.dueDate<today).length;
+  document.getElementById('fUpcoming').textContent=all.filter(x=>x.status==='Open'&&x.dueDate>today).length;
+  document.getElementById('fCompleted').textContent=all.filter(x=>x.status==='Completed').length;
+  let items=[...all].filter(x=>!filter||followState(x)===filter||(filter==='High Priority'&&x.status==='Open'&&x.priority==='High'));
+  items.sort((a,b)=>(a.status===b.status?((a.dueDate||'').localeCompare(b.dueDate||'')):(a.status==='Completed'?1:-1)));
+  if(!items.length){list.innerHTML='<div class="empty">No follow-ups in this view. Add one when you have a next action to remember.</div>';return;}
+  list.innerHTML='<div class="interview-grid">'+items.map(x=>{
+    const state=followState(x); const cls=state==='Overdue'?' overdue':state==='Due'?' today':' '+(state==='Completed'?'done':'');
+    const source=x.source==='application'?' · Linked from application':x.source==='interview'?' · Linked from interview':x.source==='networking'?' · Linked from networking':x.source==='offer'?' · Linked from offer':'';
+    const note=x.notes?`<div class="prep-block"><div class="meta">${esc(x.notes)}</div></div>`:'';
+    return `<div class="follow-card${cls}"><div class="row"><div><h3>${esc(x.title)}</h3><div class="meta">${x.owner?esc(x.owner)+'<br>':''}${esc(x.type)}${source} · Due ${esc(x.dueDate)}<br>Priority: ${esc(x.priority)} · ${esc(x.status)}</div></div><span class="pill">${esc(state)}</span></div>${note}<div class="follow-actions"><button class="small-btn" onclick="editFollowup('${x.id}')">Edit</button>${x.status==='Open'?`<button class="small-btn" onclick="completeFollowup('${x.id}')">Mark done</button>`:`<button class="small-btn" onclick="reopenFollowup('${x.id}')">Reopen</button>`}<button class="small-btn danger" onclick="deleteFollowup('${x.id}')">Delete</button></div></div>`;
+  }).join('')+'</div>';
+}
+function renderApplicationFollowups(){}
+function editFollowup(id){
+  const x=data.followups.find(f=>f.id===id);if(!x)return;
+  openFollowupModal();
+  document.getElementById('fTitle').value=x.title||'';document.getElementById('fOwner').value=x.owner||'';document.getElementById('fType').value=x.type||'Application';document.getElementById('fDate').value=x.dueDate||'';document.getElementById('fPriority').value=x.priority||'Normal';document.getElementById('fStatus').value=x.status||'Open';document.getElementById('fNotes').value=x.notes||'';
+  const form=document.getElementById('followupForm');form.dataset.editId=id;form.querySelector('button[type="submit"]').textContent='Save Changes';
+}
+function completeFollowup(id){const x=data.followups.find(f=>f.id===id);if(x){x.status='Completed';if(x.source==='interview'){const i=data.interviews.find(v=>v.id===x.sourceId);if(i)i.thanksSent=true;}save();notify('Follow-up completed.');}}
+function reopenFollowup(id){const x=data.followups.find(f=>f.id===id);if(x){x.status='Open';save();notify('Follow-up reopened.');}}
+function deleteFollowup(id){
+  if(!confirm('Delete this follow-up?'))return;
+  const x=data.followups.find(f=>f.id===id);
+  if(x?.source==='application'){
+    const app=data.applications.find(a=>a.id===x.sourceId);if(app){app.followUp='';app.nextAction='';}
+  }else if(x?.source==='networking'){
+    const c=data.networking.find(n=>n.id===x.sourceId);if(c){c.nextContact='';c.nextAction='';}
+  }else if(x?.source==='offer'){
+    const o=data.offers.find(v=>v.id===x.sourceId);if(o){o.decisionDate='';o.nextAction='';}
+  }
+  data.followups=data.followups.filter(f=>f.id!==id);
+  save();notify('Follow-up deleted.');
+}
+
+
+
+function syncOfferFollowup(offer){
+  const existing=data.followups.find(f=>f.source==='offer'&&f.sourceId===offer.id);
+  if(offer.status!=='Evaluating'||!offer.decisionDate){if(existing)data.followups=data.followups.filter(f=>f!==existing);return;}
+  const obj={id:existing?.id||newId('fu'),source:'offer',sourceId:offer.id,title:offer.nextAction||('Decision deadline — '+offer.company),owner:(offer.company+' · '+offer.role).trim(),type:'Offer',dueDate:offer.decisionDate,priority:'High',status:existing?.status||'Open',notes:offer.notes||'Linked automatically from this offer.',createdAt:existing?.createdAt||new Date().toISOString()};
+  if(existing)Object.assign(existing,obj);else data.followups.push(obj);
+}
+function openOfferModal(){populateOfferApplications();document.getElementById('offerModalBack').style.display='flex';}
+function closeOfferModal(){const b=document.getElementById('offerModalBack'),f=document.getElementById('offerForm');b.style.display='none';f.reset();delete f.dataset.editId;f.querySelector('button[type="submit"]').textContent='Save Offer';document.querySelector('#offerModalBack h1').textContent='Add Offer';document.querySelector('#offerModalBack .sub').textContent='Capture the full opportunity, not just the headline salary.';['scoreComp','scoreBenefits','scoreGrowth','scoreLearning','scoreFit','scoreFlex','scoreStability','scoreCulture'].forEach(id=>document.getElementById(id).value=5);}
+function populateOfferApplications(){const sel=document.getElementById('oApplication');if(!sel)return;const current=sel.value;sel.innerHTML='<option value="">No linked application</option>'+data.applications.map(a=>`<option value="${esc(a.id)}">${esc(a.company)} · ${esc(a.role)}</option>`).join('');if(data.applications.some(a=>a.id===current))sel.value=current;}
+document.getElementById('oApplication').addEventListener('change',()=>{const id=document.getElementById('oApplication').value;if(!id)return;const a=data.applications.find(x=>x.id===id);if(!a)return;document.getElementById('oCompany').value=a.company||'';document.getElementById('oRole').value=a.role||'';if(a.location)document.getElementById('oLocation').value=a.location;});
+document.getElementById('offerForm').addEventListener('submit',e=>{e.preventDefault();const form=e.currentTarget,editId=form.dataset.editId||'',existing=editId?data.offers.find(x=>x.id===editId):null;const num=id=>Math.max(0,Number(document.getElementById(id).value||0));const score=id=>Math.min(10,Math.max(1,Number(document.getElementById(id).value||5)));const obj={id:editId||newId('offer'),applicationId:document.getElementById('oApplication').value,company:document.getElementById('oCompany').value.trim(),role:document.getElementById('oRole').value.trim(),status:document.getElementById('oStatus').value,location:document.getElementById('oLocation').value.trim(),workModel:document.getElementById('oWorkModel').value,base:num('oBase'),bonus:num('oBonus'),equity:num('oEquity'),benefitsValue:num('oBenefitsValue'),startDate:document.getElementById('oStartDate').value,decisionDate:document.getElementById('oDecisionDate').value,nextAction:document.getElementById('oNextAction').value.trim(),notes:document.getElementById('oNotes').value.trim(),scores:{comp:score('scoreComp'),benefits:score('scoreBenefits'),growth:score('scoreGrowth'),learning:score('scoreLearning'),fit:score('scoreFit'),flex:score('scoreFlex'),stability:score('scoreStability'),culture:score('scoreCulture')},createdAt:existing?.createdAt||new Date().toISOString()};if(!obj.company||!obj.role){notify('Please enter a company and role.');return;}const idx=data.offers.findIndex(x=>x.id===obj.id);if(idx>=0)data.offers[idx]=obj;else data.offers.push(obj);syncOfferFollowup(obj);closeOfferModal();save();notify(idx>=0?'Offer updated.':'Offer saved.');});
+function offerScore(o){if(!o?.scores)return 0;const s=o.scores;return Math.round((s.comp*.25+s.benefits*.10+s.growth*.15+s.learning*.10+s.fit*.15+s.flex*.10+s.stability*.05+s.culture*.10)*10);}
+function money(v){return Number(v||0).toLocaleString(undefined,{maximumFractionDigits:0});}
+function setOfferQuick(filter){
+  const qf=document.getElementById('offerQuickFilter');
+  if(!qf)return;
+  qf.value=filter||'';
+  const sf=document.getElementById('offerFilter');
+  const q=document.getElementById('offerSearch');
+  if(sf)sf.value='';
+  if(q)q.value='';
+  renderOffers();
+}
+function clearOfferFilters(){
+  const q=document.getElementById('offerSearch');
+  const sf=document.getElementById('offerFilter');
+  const qf=document.getElementById('offerQuickFilter');
+  if(q)q.value='';
+  if(sf)sf.value='';
+  if(qf)qf.value='';
+  renderOffers();
+  notify('Offer filters cleared.');
+}
+function offerQuickMatch(o,view,today){
+  if(!view)return true;
+  if(view==='evaluating')return o.status==='Evaluating';
+  if(view==='due')return o.status==='Evaluating'&&o.decisionDate&&o.decisionDate<=today;
+  if(view==='accepted')return o.status==='Accepted';
+  if(view==='action')return o.status==='Evaluating'&&(!o.nextAction||(o.decisionDate&&o.decisionDate<=today));
+  return true;
+}
+function renderOffers(){
+  const list=document.getElementById('offerList');if(!list)return;
+  const all=data.offers||[],q=(document.getElementById('offerSearch')?.value||'').toLowerCase(),f=document.getElementById('offerFilter')?.value||'',view=document.getElementById('offerQuickFilter')?.value||'',today=localDateKey();
+  const evaluating=all.filter(o=>o.status==='Evaluating').length;
+  const due=all.filter(o=>o.status==='Evaluating'&&o.decisionDate&&o.decisionDate<=today).length;
+  const accepted=all.filter(o=>o.status==='Accepted').length;
+  const action=all.filter(o=>o.status==='Evaluating'&&(!o.nextAction||(o.decisionDate&&o.decisionDate<=today))).length;
+  document.getElementById('oCount').textContent=all.length;
+  document.getElementById('oEvaluating').textContent=evaluating;
+  document.getElementById('oAccepted').textContent=accepted;
+  const top=all.reduce((m,o)=>Math.max(m,offerScore(o)),0);document.getElementById('oTopScore').textContent=all.length?top+'/100':'—';
+  document.getElementById('offerIntelEvaluating').textContent=evaluating;
+  document.getElementById('offerIntelDue').textContent=due;
+  document.getElementById('offerIntelAccepted').textContent=accepted;
+  document.getElementById('offerIntelAction').textContent=action;
+  document.querySelectorAll('[data-offer-view]').forEach(el=>{
+    const active=el.dataset.offerView===view;
+    el.classList.toggle('active',active);
+    el.setAttribute('aria-selected',active?'true':'false');
+  });
+  const items=all.filter(o=>(!f||o.status===f)&&(!q||[o.company,o.role,o.location].join(' ').toLowerCase().includes(q))&&offerQuickMatch(o,view,today));
+  if(!items.length){
+    list.innerHTML='<div class="empty">No offers match this view. Clear the filters or add an offer to continue.</div>';
+    renderOfferSelectors();return;
+  }
+  const best=Math.max(...items.map(offerScore));
+  list.innerHTML='<div class="offer-grid">'+items.map(o=>{
+    const totalCash=Number(o.base||0)+Number(o.bonus||0),pkg=totalCash+Number(o.equity||0)+Number(o.benefitsValue||0),score=offerScore(o),win=score===best&&items.length>1?' winner':'';
+    return `<div class="offer-card${win}"><div class="row"><div><h3>${esc(o.company)} · ${esc(o.role)}</h3><div class="meta">${esc(o.status)}${o.location?' · '+esc(o.location):''} · ${esc(o.workModel)}${o.decisionDate?`<br>Decision deadline: ${esc(o.decisionDate)}`:''}</div></div><div class="score-badge">${score}/100</div></div><div class="offer-metrics"><div class="offer-metric"><span class="label">Total Cash</span><b>${money(totalCash)}</b></div><div class="offer-metric"><span class="label">Equity/Other</span><b>${money(o.equity)}</b></div><div class="offer-metric"><span class="label">Est. Package</span><b>${money(pkg)}</b></div></div>${o.applicationId?`<div class="network-note"><b>Linked application:</b> ${(()=>{const a=data.applications.find(v=>v.id===o.applicationId);return a?`${esc(a.company)} · ${esc(a.role)}`:'Application no longer exists';})()}</div>`:''}${o.nextAction?`<div class="network-note"><b>Next action:</b> ${esc(o.nextAction)}</div>`:''}<div class="offer-actions"><button class="small-btn" onclick="editOffer('${o.id}')">Edit</button><button class="small-btn" onclick="selectOfferForCompare('${o.id}')">Compare</button><button class="small-btn danger" onclick="deleteOffer('${o.id}')">Delete</button></div></div>`;
+  }).join('')+'</div>';
+  renderOfferSelectors();
+}
+
+function renderOfferSelectors(){const all=data.offers||[];['compareA','compareB','compareC'].forEach(id=>{const sel=document.getElementById(id);if(!sel)return;const current=sel.value;sel.innerHTML='<option value="">Select an offer</option>'+all.map(o=>`<option value="${esc(o.id)}">${esc(o.company)} · ${esc(o.role)}</option>`).join('');if(all.some(o=>o.id===current))sel.value=current;});renderOfferComparison();}
+function selectOfferForCompare(id){for(const sid of ['compareA','compareB','compareC']){const s=document.getElementById(sid);if(s&&!s.value){s.value=id;renderOfferComparison();return;}}document.getElementById('compareA').value=id;renderOfferComparison();}
+function renderOfferComparison(){const ids=['compareA','compareB','compareC'].map(id=>document.getElementById(id)?.value).filter(Boolean),list=ids.map(id=>data.offers.find(o=>o.id===id)).filter(Boolean),box=document.getElementById('offerComparison');if(!box)return;if(list.length<2){box.innerHTML='<div class="empty">Select at least two offers to compare them side by side.</div>';return;}const rows=[['Status',o=>o.status],['Base salary',o=>money(o.base)],['Annual bonus',o=>money(o.bonus)],['Total cash',o=>money(Number(o.base||0)+Number(o.bonus||0))],['Equity / other',o=>money(o.equity)],['Est. benefits value',o=>money(o.benefitsValue)],['Work model',o=>o.workModel],['Location',o=>o.location||'—'],['Start date',o=>o.startDate||'—'],['Decision deadline',o=>o.decisionDate||'—'],['Compensation score',o=>(o.scores?.comp||0)+'/10'],['Benefits score',o=>(o.scores?.benefits||0)+'/10'],['Growth score',o=>(o.scores?.growth||0)+'/10'],['Learning score',o=>(o.scores?.learning||0)+'/10'],['Role fit',o=>(o.scores?.fit||0)+'/10'],['Flexibility',o=>(o.scores?.flex||0)+'/10'],['Stability',o=>(o.scores?.stability||0)+'/10'],['Culture',o=>(o.scores?.culture||0)+'/10'],['Overall decision score',o=>offerScore(o)+'/100']];const max=Math.max(...list.map(offerScore));box.innerHTML=`<table><thead><tr><th>Factor</th>${list.map(o=>`<th>${esc(o.company)}<br><span style="font-weight:400;color:var(--muted)">${esc(o.role)}</span></th>`).join('')}</tr></thead><tbody>${rows.map(([label,fn])=>`<tr><td><b>${label}</b></td>${list.map(o=>`<td class="${label==='Overall decision score'&&offerScore(o)===max?'winner':''}">${esc(fn(o))}</td>`).join('')}</tr>`).join('')}</tbody></table><div class="note" style="margin-top:10px">The decision score is a structured aid, not a recommendation. Consider your own priorities and circumstances.</div>`;}
+function editOffer(id){const o=data.offers.find(x=>x.id===id);if(!o)return;openOfferModal();document.getElementById('oApplication').value=o.applicationId||'';document.getElementById('oCompany').value=o.company||'';document.getElementById('oRole').value=o.role||'';document.getElementById('oStatus').value=o.status||'Evaluating';document.getElementById('oLocation').value=o.location||'';document.getElementById('oWorkModel').value=o.workModel||'Remote';document.getElementById('oBase').value=o.base||'';document.getElementById('oBonus').value=o.bonus||'';document.getElementById('oEquity').value=o.equity||'';document.getElementById('oBenefitsValue').value=o.benefitsValue||'';document.getElementById('oStartDate').value=o.startDate||'';document.getElementById('oDecisionDate').value=o.decisionDate||'';document.getElementById('oNextAction').value=o.nextAction||'';document.getElementById('oNotes').value=o.notes||'';const s=o.scores||{};document.getElementById('scoreComp').value=s.comp||5;document.getElementById('scoreBenefits').value=s.benefits||5;document.getElementById('scoreGrowth').value=s.growth||5;document.getElementById('scoreLearning').value=s.learning||5;document.getElementById('scoreFit').value=s.fit||5;document.getElementById('scoreFlex').value=s.flex||5;document.getElementById('scoreStability').value=s.stability||5;document.getElementById('scoreCulture').value=s.culture||5;const form=document.getElementById('offerForm');form.dataset.editId=id;form.querySelector('button[type="submit"]').textContent='Save Changes';document.querySelector('#offerModalBack h1').textContent='Edit Offer';document.querySelector('#offerModalBack .sub').textContent='Update the opportunity and keep its decision workflow intact.';}
+function deleteOffer(id){if(!confirm('Delete this offer?'))return;data.followups=data.followups.filter(f=>!(f.source==='offer'&&f.sourceId===id));data.offers=data.offers.filter(o=>o.id!==id);save();notify('Offer deleted.');}
+function seedOfferData(){if((data.offers||[]).length&&!confirm('Add demo offers to the existing records?'))return;const samples=[{company:'Northstar',role:'Product Analyst',status:'Evaluating',location:'New York',workModel:'Hybrid',base:78000,bonus:7000,equity:12000,benefitsValue:6000,startDate:'2026-11-03',decisionDate:'2026-10-12',nextAction:'Clarify equity vesting',scores:{comp:8,benefits:7,growth:9,learning:9,fit:9,flex:7,stability:8,culture:8},notes:'Strong growth path.'},{company:'Vertex Systems',role:'Data Analyst',status:'Evaluating',location:'Bengaluru',workModel:'Remote',base:72000,bonus:5000,equity:15000,benefitsValue:5000,startDate:'2026-11-10',decisionDate:'2026-10-15',nextAction:'Ask about promotion cycle',scores:{comp:7,benefits:8,growth:8,learning:8,fit:8,flex:10,stability:7,culture:8},notes:'Excellent flexibility.'},{company:'Lumen Studio',role:'Operations Lead',status:'Accepted',location:'Remote',workModel:'Remote',base:69000,bonus:3000,equity:5000,benefitsValue:8000,startDate:'2026-10-27',decisionDate:'2026-10-05',nextAction:'Confirm onboarding details',scores:{comp:7,benefits:9,growth:7,learning:8,fit:8,flex:10,stability:8,culture:9},notes:'Best work-life balance.'}];samples.forEach(s=>data.offers.push({...s,id:newId('offer'),createdAt:new Date().toISOString()}));data.offers.forEach(syncOfferFollowup);save();notify('Demo offers added.');}
+
+function populateNetworkApplications(current=''){const sel=document.getElementById('nApplication');if(!sel)return;sel.innerHTML='<option value="">No linked application</option>'+data.applications.map(a=>`<option value="${esc(a.id)}">${esc(a.company)} · ${esc(a.role)}</option>`).join('');if(current&&data.applications.some(a=>a.id===current))sel.value=current;}
+function openNetworkModal(){populateNetworkApplications();document.getElementById('networkModalBack').style.display='flex';}
+function closeNetworkModal(){
+  const b=document.getElementById('networkModalBack');
+  const f=document.getElementById('networkForm');
+  b.style.display='none';f.reset();delete f.dataset.editId;
+  f.querySelector('button[type="submit"]').textContent='Save Contact';document.querySelector('#networkModalBack h1').textContent='Add Contact';document.querySelector('#networkModalBack .sub').textContent='Keep the relationship and next action in one place.';
+}
+function syncNetworkingFollowup(contact){
+  const source='networking', sourceId=contact.id;
+  const existing=data.followups.find(f=>f.source===source&&f.sourceId===sourceId);
+  if(!contact.nextContact){
+    if(existing) data.followups=data.followups.filter(f=>f!==existing);
+    return;
+  }
+  const obj={
+    id:existing?.id||newId('fu'),
+    title:contact.nextAction||('Follow up with '+contact.name),
+    owner:(contact.name+(contact.company?' · '+contact.company:'')).trim(),
+    type:'Networking',
+    dueDate:contact.nextContact,
+    priority:contact.referral==='Yes'?'High':'Normal',
+    status:existing?.status||'Open',
+    notes:contact.notes||'',
+    source:'networking',
+    sourceId:sourceId,
+    createdAt:existing?.createdAt||new Date().toISOString()
+  };
+  if(existing) Object.assign(existing,obj); else data.followups.push(obj);
+}
+document.getElementById('networkForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const form=e.currentTarget, editId=form.dataset.editId||'';
+  const existing=editId?data.networking.find(x=>x.id===editId):null;
+  const obj={
+    id:editId||newId('net'),
+    name:document.getElementById('nName').value.trim(),
+    company:document.getElementById('nCompany').value.trim(),
+    role:document.getElementById('nRole').value.trim(),
+    email:document.getElementById('nEmail').value.trim(),
+    linkedin:document.getElementById('nLinkedIn').value.trim(),
+    stage:document.getElementById('nStage').value,
+    applicationId:document.getElementById('nApplication').value,
+    met:document.getElementById('nMet').value.trim(),
+    lastContact:document.getElementById('nLast').value,
+    nextContact:document.getElementById('nNext').value,
+    nextAction:document.getElementById('nAction').value.trim(),
+    referral:document.getElementById('nReferral').value,
+    notes:document.getElementById('nNotes').value.trim(),
+    createdAt:existing?.createdAt||new Date().toISOString()
+  };
+  if(!obj.name){notify('Please enter a contact name.');return;}
+  const idx=data.networking.findIndex(x=>x.id===obj.id);
+  if(idx>=0) data.networking[idx]=obj; else data.networking.push(obj);
+  syncNetworkingFollowup(obj);
+  closeNetworkModal();save();notify(idx>=0?'Contact updated.':'Contact saved.');
+});
+function renderNetworking(){
+  const list=document.getElementById('networkList');if(!list)return;
+  const filter=document.getElementById('networkFilter')?.value||'';
+  const q=(document.getElementById('networkSearch')?.value||'').toLowerCase();
+  const view=window.networkQuickView||'all';
+  const all=data.networking||[], today=localDateKey();
+  const msDay=86400000;
+  const daysSince=(date)=>{if(!date)return Infinity; const t=new Date(date+'T00:00:00'); const n=new Date(today+'T00:00:00'); return Math.floor((n-t)/msDay);};
+  const referralCount=all.filter(x=>x.referral==='Yes').length;
+  const dueCount=all.filter(x=>x.nextContact&&x.nextContact<=today).length;
+  const staleCount=all.filter(x=>daysSince(x.lastContact)>=30 || (!x.lastContact&&x.stage!=='New')).length;
+  document.getElementById('nContacts').textContent=all.length;
+  document.getElementById('nActive').textContent=all.filter(x=>['Connected','Conversation','Referral','Follow-up'].includes(x.stage)).length;
+  document.getElementById('nReferrals').textContent=referralCount;
+  document.getElementById('nDue').textContent=dueCount;
+  document.getElementById('niAll').textContent=all.length;
+  document.getElementById('niReferrals').textContent=referralCount;
+  document.getElementById('niStale').textContent=staleCount;
+  document.getElementById('niDue').textContent=dueCount;
+  document.querySelectorAll('[data-net-view]').forEach(el=>{const active=el.dataset.netView===view;el.classList.toggle('active',active);el.setAttribute('aria-selected',active?'true':'false');});
+  let items=[...all].filter(x=>(!filter||x.stage===filter)&&(!q||[x.name,x.company,x.role].join(' ').toLowerCase().includes(q)));
+  if(view==='referrals')items=items.filter(x=>x.referral==='Yes');
+  if(view==='stale')items=items.filter(x=>daysSince(x.lastContact)>=30 || (!x.lastContact&&x.stage!=='New'));
+  if(view==='due')items=items.filter(x=>x.nextContact&&x.nextContact<=today);
+  items.sort((a,b)=>(a.nextContact||'9999-12-31').localeCompare(b.nextContact||'9999-12-31'));
+  if(!items.length){list.innerHTML='<div class="empty">No contacts match this view. Add a contact or change the filter to see more of your network.</div>';return;}
+  list.innerHTML='<div class="interview-grid">'+items.map(x=>{
+    const contact=x.email?`<br>${esc(x.email)}`:'';
+    const next=x.nextContact?`Next contact: ${esc(x.nextContact)}`:'No next contact scheduled';
+    const stale=daysSince(x.lastContact)>=30;
+    return `<div class="network-card"><div class="row"><div><h3>${esc(x.name)}</h3><div class="meta">${esc([x.company,x.role].filter(Boolean).join(' · '))||'Role/company not added'}<br>Stage: ${esc(x.stage)}${contact}<br>${next}${stale?' · Needs reconnection':''}</div></div><span class="contact-chip">${x.referral==='Yes'?'Referral opportunity':'Relationship'}</span></div>${x.nextAction?`<div class="network-note"><b>Next action:</b> ${esc(x.nextAction)}</div>`:''}${x.notes?`<div class="network-note"><b>Notes:</b> ${esc(x.notes)}</div>`:''}<div class="row" style="margin-top:10px"><button class="btn secondary" onclick="viewNetwork('${x.id}')">Edit</button><button class="btn secondary" onclick="deleteNetwork('${x.id}')">Delete</button></div></div>`;
+  }).join('')+'</div>';
+}
+
+function viewNetwork(id){
+  const x=data.networking.find(c=>c.id===id);if(!x)return;
+  document.getElementById('networkModalBack').style.display='flex';document.querySelector('#networkModalBack h1').textContent='Edit Contact';document.querySelector('#networkModalBack .sub').textContent='Update the relationship without losing its follow-up history.';
+  document.getElementById('nName').value=x.name||'';document.getElementById('nCompany').value=x.company||'';document.getElementById('nRole').value=x.role||'';
+  document.getElementById('nEmail').value=x.email||'';document.getElementById('nLinkedIn').value=x.linkedin||'';document.getElementById('nStage').value=x.stage||'Connected';
+  populateNetworkApplications(x.applicationId||'');
+  document.getElementById('nMet').value=x.met||'';document.getElementById('nLast').value=x.lastContact||'';document.getElementById('nNext').value=x.nextContact||'';
+  document.getElementById('nAction').value=x.nextAction||'';document.getElementById('nReferral').value=x.referral||'No';document.getElementById('nNotes').value=x.notes||'';
+  const form=document.getElementById('networkForm');form.dataset.editId=id;form.querySelector('button[type="submit"]').textContent='Save Changes';
+}
+function deleteNetwork(id){
+  if(!confirm('Delete this contact?'))return;
+  data.networking=data.networking.filter(x=>x.id!==id);
+  data.followups=data.followups.filter(f=>!(f.source==='networking'&&f.sourceId===id));
+  save();notify('Contact deleted.');
+}
+function createNetworkFollowup(id){
+  const x=data.networking.find(c=>c.id===id);if(!x)return;
+  const title=prompt('What is the next action?',x.nextAction||('Follow up with '+x.name));
+  if(title===null)return;
+  const due=prompt('Due date (YYYY-MM-DD)',x.nextContact||'');
+  if(!due)return;
+  x.nextAction=title.trim()||('Follow up with '+x.name);
+  x.nextContact=due.trim();
+  syncNetworkingFollowup(x);
+  save();
+  notify('Networking follow-up saved.');
+}
+
+function setFollowupQuick(filter){
+  const sel=document.getElementById('followFilter');
+  if(!sel)return;
+  sel.value=filter;
+  renderFollowups();
+  document.querySelectorAll('[data-followup-view]').forEach(el=>{
+    const active=el.dataset.followupView===filter;
+    el.classList.toggle('active',active);
+    el.setAttribute('aria-selected',active?'true':'false');
+  });
+}
+function updateFollowupIntel(){
+  const all=Array.isArray(data.followups)?data.followups:[];
+  const today=localDateKey();
+  const now=new Date(today+'T00:00:00');
+  const end=new Date(now); end.setDate(end.getDate()+7);
+  const endKey=end.toISOString().slice(0,10);
+  const open=all.filter(x=>x.status==='Open');
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=String(v)};
+  set('fuIntelOverdue',open.filter(x=>x.dueDate&&x.dueDate<today).length);
+  set('fuIntelToday',open.filter(x=>x.dueDate===today).length);
+  set('fuIntelUpcoming',open.filter(x=>x.dueDate&&x.dueDate>today&&x.dueDate<=endKey).length);
+  set('fuIntelPriority',open.filter(x=>x.priority==='High').length);
+}
+
+function renderSettingsStatus(){
+  const status=document.getElementById('settingsDataStatus');
+  const count=document.getElementById('settingsRecordCount');
+  if(!status||!count)return;
+  const total=getTotalRecordCount();
+  let meta=null;
+  try{meta=JSON.parse(localStorage.getItem('apexVerseCareerOS_lastBackupMeta')||'null')}catch(e){}
+  const last=meta?.exportedAt||localStorage.getItem('apexVerseCareerOS_lastBackup');
+  status.textContent='Local-first storage';
+  count.textContent=total?(total+' record'+(total===1?'':'s')+' stored'):'Ready for your data';
+
+  const box=document.querySelector('.backup-health');
+  const title=document.getElementById('backupHealthTitle');
+  const note=document.getElementById('backupHealthNote');
+  const current=document.getElementById('backupCurrentCount');
+  const lastDate=document.getElementById('backupLastDate');
+  if(!box||!title||!note||!current||!lastDate)return;
+  current.textContent=String(total);
+  box.classList.remove('current','stale');
+  if(!last){
+    title.textContent='No backup recorded';
+    note.textContent='Export a JSON backup to create a portable copy of your Career OS data.';
+    lastDate.textContent='Never';
+    return;
+  }
+  const backupCount=Number.isFinite(Number(meta?.recordCount))?Number(meta.recordCount):null;
+  const when=new Date(last);
+  lastDate.textContent=Number.isNaN(when.getTime())?'Unknown':when.toLocaleString();
+  if(backupCount===total){
+    box.classList.add('current');
+    title.textContent='Backup is current';
+    note.textContent='Your latest JSON backup contains the same number of records currently stored in this browser.';
+  }else{
+    box.classList.add('stale');
+    title.textContent='Backup recommended';
+    note.textContent=backupCount===null?'A backup exists, but its record count is unavailable. Export a fresh JSON backup when convenient.':`Latest backup has ${backupCount} record${backupCount===1?'':'s'}; this browser currently has ${total}. Export a fresh backup before upgrading or changing devices.`;
+  }
+}
+
+renderAll();
+function renderAll(){
+  renderDashboard();renderApplications();renderInterviews();renderFollowups();updateFollowupIntel();renderAnalytics();
+  if(!window.__networkIntelBound){
+    document.querySelectorAll('[data-net-view]').forEach(el=>el.addEventListener('click',()=>{window.networkQuickView=el.dataset.netView||'all';renderNetworking();}));
+    window.__networkIntelBound=true;
+  }
+  renderNetworking();renderOffers();renderSettingsStatus();
+}
+</script>
+</body>
+</html>
